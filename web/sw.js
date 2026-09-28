@@ -1,5 +1,5 @@
 // Garde l'interface disponible hors connexion. Les données passent toujours par le réseau.
-const VERSION = "chantier-v1";
+const VERSION = "chantier-v2";
 const SHELL = ["./", "index.html", "css/app.css", "js/app.js", "js/logic.js", "js/config.js", "js/store-local.js", "js/store-supabase.js", "seed.json", "manifest.webmanifest", "icons/icon-192.png"];
 
 self.addEventListener("install", (e) => {

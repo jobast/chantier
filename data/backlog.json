@@ -1,5 +1,5 @@
 {
- "version": 3,
+ "version": 4,
  "members": [
   "Joan",
   "Jacqueline"
@@ -71,155 +71,831 @@
    "sort": 12
   }
  ],
- "tasks": [
-  {
-   "id": "enduit-rd",
-   "title": "Enduit chaux : se documenter sur les recettes et dosages",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Enduit chaux",
-   "kind": "test",
-   "priority": "haute",
-   "minutes": 120,
-   "depends_on": [],
-   "note": "Une seule recherche pour toute la maison (chambres, bureau, salon)."
-  },
-  {
-   "id": "enduit-essais",
-   "title": "Enduit chaux : faire des essais sur panneaux",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Enduit chaux",
-   "kind": "test",
-   "priority": "haute",
-   "minutes": 240,
-   "depends_on": [
-    "enduit-rd"
-   ],
-   "note": "Noter chaque essai dans le carnet : recette, photo, verdict."
-  },
-  {
-   "id": "lum-dec",
-   "title": "Éclairage : spots encastrés ou abat-jour ?",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Électricité & lumières",
-   "kind": "decision",
-   "priority": "haute",
-   "minutes": 60,
-   "depends_on": [],
-   "note": "Bloque les saignées, donc l'enduit."
-  },
-  {
-   "id": "termites-dec",
-   "title": "Termites : choisir le produit et la méthode",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Termites",
-   "kind": "decision",
-   "priority": "haute",
-   "minutes": 60,
-   "depends_on": [],
-   "note": "A faire avant toute peinture ou vernis sur le bois."
-  },
-  {
-   "id": "turquoise-dec",
-   "title": "Choisir le turquoise (teinte, type de peinture)",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "decision",
-   "priority": "normale",
-   "minutes": 45,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "rideaux-dec",
-   "title": "Choisir les rideaux",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Rideaux",
-   "kind": "decision",
-   "priority": "normale",
-   "minutes": 60,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "ventilo-dec",
-   "title": "Trouver la technique pour poser des ventilateurs",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Ventilation",
-   "kind": "decision",
-   "priority": "normale",
-   "minutes": 90,
-   "depends_on": [],
-   "note": ""
-  },
+ "projects": [
   {
    "id": "solaire",
-   "title": "Isoler le bruit du solaire : fermer le petit réduit",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Bruit solaire",
-   "kind": "travaux",
+   "title": "Bruit du solaire",
    "priority": "urgente",
-   "minutes": 240,
-   "depends_on": [],
-   "note": ""
+   "note": "Grande urgence.",
+   "sort": 0
   },
   {
-   "id": "wc-visiteurs",
-   "title": "Fermer les toilettes visiteurs (monter un mur)",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Bruit solaire",
-   "kind": "travaux",
+   "id": "evacuation",
+   "title": "Évacuation de la SDB enfants",
+   "priority": "urgente",
+   "note": "L'eau stagne et déborde : risque de dégâts des eaux.",
+   "sort": 1
+  },
+  {
+   "id": "serpents",
+   "title": "Anti-serpents : balais de porte",
    "priority": "haute",
-   "minutes": 480,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "porte-entree",
-   "title": "Régler la porte d'entrée",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 60,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "penderie",
-   "title": "Faire le(s) meuble(s) de penderie",
-   "rooms": [
-    "maison"
-   ],
-   "lot": "Mobilier",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 960,
-   "depends_on": [],
-   "note": ""
+   "note": "",
+   "sort": 2
   },
   {
    "id": "termites",
    "title": "Traitement termites",
+   "priority": "haute",
+   "note": "A faire avant toute peinture ou vernis sur le bois.",
+   "sort": 3
+  },
+  {
+   "id": "eclairage",
+   "title": "Éclairage",
+   "priority": "haute",
+   "note": "La décision bloque les saignées, donc l'enduit.",
+   "sort": 4
+  },
+  {
+   "id": "peinture",
+   "title": "Peinture des chambres",
+   "priority": "normale",
+   "note": "",
+   "sort": 5
+  },
+  {
+   "id": "enduit",
+   "title": "Enduit à la chaux",
+   "priority": "haute",
+   "note": "Une seule recherche et une seule série d'essais pour toutes les pièces.",
+   "sort": 6
+  },
+  {
+   "id": "menuiseries",
+   "title": "Portes et fenêtres : turquoise et vernis",
+   "priority": "normale",
+   "note": "",
+   "sort": 7
+  },
+  {
+   "id": "reparations",
+   "title": "Réparations portes et fenêtres",
+   "priority": "haute",
+   "note": "",
+   "sort": 8
+  },
+  {
+   "id": "rideaux",
+   "title": "Rideaux",
+   "priority": "normale",
+   "note": "",
+   "sort": 9
+  },
+  {
+   "id": "sdb",
+   "title": "Salles de bain : embellir",
+   "priority": "normale",
+   "note": "",
+   "sort": 10
+  },
+  {
+   "id": "ventilos",
+   "title": "Ventilateurs",
+   "priority": "normale",
+   "note": "",
+   "sort": 11
+  },
+  {
+   "id": "salon-chaux",
+   "title": "Salon : reprise de la chaux",
+   "priority": "normale",
+   "note": "",
+   "sort": 12
+  },
+  {
+   "id": "poteaux",
+   "title": "Salon : poteaux",
+   "priority": "normale",
+   "note": "",
+   "sort": 13
+  },
+  {
+   "id": "dalles",
+   "title": "Salon : tranches de dalles",
+   "priority": "normale",
+   "note": "",
+   "sort": 14
+  },
+  {
+   "id": "plancher",
+   "title": "Plancher au-dessus de la buanderie",
+   "priority": "normale",
+   "note": "",
+   "sort": 15
+  },
+  {
+   "id": "bureau",
+   "title": "Bureau : ranger et habiller le haut des murs",
+   "priority": "haute",
+   "note": "",
+   "sort": 16
+  },
+  {
+   "id": "boiseries-parents",
+   "title": "Notre chambre : boiseries",
+   "priority": "normale",
+   "note": "",
+   "sort": 17
+  },
+  {
+   "id": "penderie",
+   "title": "Penderie",
+   "priority": "normale",
+   "note": "",
+   "sort": 18
+  },
+  {
+   "id": "sous-escalier",
+   "title": "Meubles sous l'escalier",
+   "priority": "normale",
+   "note": "",
+   "sort": 19
+  },
+  {
+   "id": "aile",
+   "title": "Autre aile",
+   "priority": "normale",
+   "note": "Préférence : appartement. Mais un escalier depuis le salon réduit l'indépendance.",
+   "sort": 20
+  }
+ ],
+ "stages": [
+  {
+   "id": "solaire.concevoir",
+   "project_id": "solaire",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "solaire.acheter",
+   "project_id": "solaire",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "solaire.construire",
+   "project_id": "solaire",
+   "title": "Fermer",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "evacuation.diag",
+   "project_id": "evacuation",
+   "title": "Diagnostiquer",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "evacuation.acheter",
+   "project_id": "evacuation",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "evacuation.reparer",
+   "project_id": "evacuation",
+   "title": "Réparer",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "evacuation.verifier",
+   "project_id": "evacuation",
+   "title": "Vérifier",
+   "kind": "finir",
+   "sort": 3
+  },
+  {
+   "id": "serpents.acheter",
+   "project_id": "serpents",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 0
+  },
+  {
+   "id": "serpents.poser",
+   "project_id": "serpents",
+   "title": "Poser",
+   "kind": "appliquer",
+   "sort": 1
+  },
+  {
+   "id": "termites.choisir",
+   "project_id": "termites",
+   "title": "Choisir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "termites.acheter",
+   "project_id": "termites",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "termites.traiter",
+   "project_id": "termites",
+   "title": "Traiter",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "eclairage.decider",
+   "project_id": "eclairage",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "eclairage.acheter",
+   "project_id": "eclairage",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "eclairage.saignees",
+   "project_id": "eclairage",
+   "title": "Saignées et câbles",
+   "kind": "preparer",
+   "sort": 2
+  },
+  {
+   "id": "eclairage.installer",
+   "project_id": "eclairage",
+   "title": "Installer",
+   "kind": "appliquer",
+   "sort": 3
+  },
+  {
+   "id": "peinture.choisir",
+   "project_id": "peinture",
+   "title": "Choisir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "peinture.acheter",
+   "project_id": "peinture",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "peinture.tester",
+   "project_id": "peinture",
+   "title": "Tester",
+   "kind": "tester",
+   "sort": 2
+  },
+  {
+   "id": "peinture.plafonds",
+   "project_id": "peinture",
+   "title": "Plafonds",
+   "kind": "appliquer",
+   "sort": 3
+  },
+  {
+   "id": "peinture.boiseries",
+   "project_id": "peinture",
+   "title": "Boiseries et murs",
+   "kind": "appliquer",
+   "sort": 4
+  },
+  {
+   "id": "enduit.renseigner",
+   "project_id": "enduit",
+   "title": "Se renseigner",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "enduit.acheter",
+   "project_id": "enduit",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "enduit.tester",
+   "project_id": "enduit",
+   "title": "Tester",
+   "kind": "tester",
+   "sort": 2
+  },
+  {
+   "id": "enduit.preparer",
+   "project_id": "enduit",
+   "title": "Préparer les murs",
+   "kind": "preparer",
+   "sort": 3
+  },
+  {
+   "id": "enduit.appliquer",
+   "project_id": "enduit",
+   "title": "Appliquer",
+   "kind": "appliquer",
+   "sort": 4
+  },
+  {
+   "id": "menuiseries.choisir",
+   "project_id": "menuiseries",
+   "title": "Choisir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "menuiseries.acheter",
+   "project_id": "menuiseries",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "menuiseries.tester",
+   "project_id": "menuiseries",
+   "title": "Tester",
+   "kind": "tester",
+   "sort": 2
+  },
+  {
+   "id": "menuiseries.preparer",
+   "project_id": "menuiseries",
+   "title": "Poncer",
+   "kind": "preparer",
+   "sort": 3
+  },
+  {
+   "id": "menuiseries.appliquer",
+   "project_id": "menuiseries",
+   "title": "Peindre et vernir",
+   "kind": "appliquer",
+   "sort": 4
+  },
+  {
+   "id": "reparations.mesurer",
+   "project_id": "reparations",
+   "title": "Mesurer",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "reparations.acheter",
+   "project_id": "reparations",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "reparations.reparer",
+   "project_id": "reparations",
+   "title": "Réparer",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "reparations.fermer",
+   "project_id": "reparations",
+   "title": "Condamner et fermer",
+   "kind": "appliquer",
+   "sort": 3
+  },
+  {
+   "id": "rideaux.choisir",
+   "project_id": "rideaux",
+   "title": "Choisir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "rideaux.acheter",
+   "project_id": "rideaux",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "rideaux.poser",
+   "project_id": "rideaux",
+   "title": "Poser",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "sdb.decider",
+   "project_id": "sdb",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "sdb.acheter",
+   "project_id": "sdb",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "sdb.peindre",
+   "project_id": "sdb",
+   "title": "Peindre",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "sdb.finitions",
+   "project_id": "sdb",
+   "title": "Finitions",
+   "kind": "finir",
+   "sort": 3
+  },
+  {
+   "id": "ventilos.technique",
+   "project_id": "ventilos",
+   "title": "Trouver la technique",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "ventilos.acheter",
+   "project_id": "ventilos",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "ventilos.installer",
+   "project_id": "ventilos",
+   "title": "Installer",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "salon-chaux.acheter",
+   "project_id": "salon-chaux",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 0
+  },
+  {
+   "id": "salon-chaux.preparer",
+   "project_id": "salon-chaux",
+   "title": "Préparer la chaux",
+   "kind": "preparer",
+   "sort": 1
+  },
+  {
+   "id": "salon-chaux.appliquer",
+   "project_id": "salon-chaux",
+   "title": "Reprendre",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "poteaux.decider",
+   "project_id": "poteaux",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "poteaux.acheter",
+   "project_id": "poteaux",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "poteaux.realiser",
+   "project_id": "poteaux",
+   "title": "Réaliser",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "dalles.decider",
+   "project_id": "dalles",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "dalles.acheter",
+   "project_id": "dalles",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "dalles.realiser",
+   "project_id": "dalles",
+   "title": "Réaliser",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "plancher.concevoir",
+   "project_id": "plancher",
+   "title": "Concevoir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "plancher.acheter",
+   "project_id": "plancher",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "plancher.construire",
+   "project_id": "plancher",
+   "title": "Construire",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "bureau.ranger",
+   "project_id": "bureau",
+   "title": "Ranger",
+   "kind": "preparer",
+   "sort": 0
+  },
+  {
+   "id": "bureau.concevoir",
+   "project_id": "bureau",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 1
+  },
+  {
+   "id": "bureau.acheter",
+   "project_id": "bureau",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 2
+  },
+  {
+   "id": "bureau.poser",
+   "project_id": "bureau",
+   "title": "Poser",
+   "kind": "appliquer",
+   "sort": 3
+  },
+  {
+   "id": "boiseries-parents.decider",
+   "project_id": "boiseries-parents",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "boiseries-parents.realiser",
+   "project_id": "boiseries-parents",
+   "title": "Réaliser",
+   "kind": "appliquer",
+   "sort": 1
+  },
+  {
+   "id": "penderie.concevoir",
+   "project_id": "penderie",
+   "title": "Concevoir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "penderie.acheter",
+   "project_id": "penderie",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "penderie.construire",
+   "project_id": "penderie",
+   "title": "Construire",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "sous-escalier.concevoir",
+   "project_id": "sous-escalier",
+   "title": "Concevoir",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "sous-escalier.acheter",
+   "project_id": "sous-escalier",
+   "title": "Acheter",
+   "kind": "acheter",
+   "sort": 1
+  },
+  {
+   "id": "sous-escalier.construire",
+   "project_id": "sous-escalier",
+   "title": "Construire",
+   "kind": "appliquer",
+   "sort": 2
+  },
+  {
+   "id": "aile.decider",
+   "project_id": "aile",
+   "title": "Décider",
+   "kind": "decider",
+   "sort": 0
+  },
+  {
+   "id": "aile.travaux",
+   "project_id": "aile",
+   "title": "Gros œuvre",
+   "kind": "appliquer",
+   "sort": 1
+  }
+ ],
+ "tasks": [
+  {
+   "id": "solaire.1",
+   "title": "Choisir comment fermer le réduit et le WC visiteurs",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "solaire",
+   "stage_id": "solaire.concevoir"
+  },
+  {
+   "id": "solaire.2",
+   "title": "Acheter les matériaux (plaques, isolant…)",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "solaire",
+   "stage_id": "solaire.acheter"
+  },
+  {
+   "id": "solaire.3",
+   "title": "Fermer le petit réduit",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "solaire",
+   "stage_id": "solaire.construire"
+  },
+  {
+   "id": "solaire.4",
+   "title": "Monter le mur des toilettes visiteurs",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 480,
+   "kind": "travaux",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "solaire",
+   "stage_id": "solaire.construire"
+  },
+  {
+   "id": "evacuation.1",
+   "title": "Trouver pourquoi l'eau stagne",
+   "rooms": [
+    "sdb-enfants"
+   ],
+   "minutes": 60,
+   "kind": "travaux",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "evacuation",
+   "stage_id": "evacuation.diag"
+  },
+  {
+   "id": "evacuation.2",
+   "title": "Acheter les pièces",
+   "rooms": [
+    "sdb-enfants"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "evacuation",
+   "stage_id": "evacuation.acheter"
+  },
+  {
+   "id": "evacuation.3",
+   "title": "Réparer l'évacuation",
+   "rooms": [
+    "sdb-enfants"
+   ],
+   "minutes": 180,
+   "kind": "travaux",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "evacuation",
+   "stage_id": "evacuation.reparer"
+  },
+  {
+   "id": "evacuation.4",
+   "title": "Vérifier après une semaine d'usage",
+   "rooms": [
+    "sdb-enfants"
+   ],
+   "minutes": 15,
+   "kind": "travaux",
+   "priority": "urgente",
+   "depends_on": [],
+   "note": "",
+   "project_id": "evacuation",
+   "stage_id": "evacuation.verifier"
+  },
+  {
+   "id": "serpents.1",
+   "title": "Acheter les balais de bas de porte",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "serpents",
+   "stage_id": "serpents.acheter"
+  },
+  {
+   "id": "serpents.2",
+   "title": "Poser un balai de bas de porte",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal",
+    "ch-parents",
+    "ch-malik",
+    "bureau"
+   ],
+   "minutes": 20,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "serpents",
+   "stage_id": "serpents.poser"
+  },
+  {
+   "id": "termites.1",
+   "title": "Choisir le produit et la méthode",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "termites",
+   "stage_id": "termites.choisir"
+  },
+  {
+   "id": "termites.2",
+   "title": "Acheter le produit anti-termites",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "termites",
+   "stage_id": "termites.acheter"
+  },
+  {
+   "id": "termites.3",
+   "title": "Traiter les bois",
    "rooms": [
     "ch-liam",
     "ch-maceo",
@@ -229,32 +905,58 @@
     "sdb-enfants",
     "salon"
    ],
-   "lot": "Termites",
+   "minutes": 60,
    "kind": "travaux",
    "priority": "haute",
-   "minutes": 60,
-   "depends_on": [
-    "termites-dec"
-   ],
-   "note": "Salon : la fenêtre."
+   "depends_on": [],
+   "note": "Salon : la fenêtre.",
+   "project_id": "termites",
+   "stage_id": "termites.traiter"
   },
   {
-   "id": "toit",
-   "title": "Traiter le haut du toit (termites)",
+   "id": "termites.4",
+   "title": "Traiter le haut du toit",
    "rooms": [
     "toit"
    ],
-   "lot": "Termites",
+   "minutes": 240,
    "kind": "travaux",
    "priority": "haute",
-   "minutes": 240,
-   "depends_on": [
-    "termites-dec"
-   ],
-   "note": ""
+   "depends_on": [],
+   "note": "",
+   "project_id": "termites",
+   "stage_id": "termites.traiter"
   },
   {
-   "id": "saignees",
+   "id": "eclairage.1",
+   "title": "Spots encastrés ou abat-jour ?",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.decider"
+  },
+  {
+   "id": "eclairage.2",
+   "title": "Acheter luminaires, câbles et boîtiers",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.acheter"
+  },
+  {
+   "id": "eclairage.3",
    "title": "Saigner les murs et passer les fils",
    "rooms": [
     "ch-liam",
@@ -262,119 +964,16 @@
     "ch-solal",
     "bureau"
    ],
-   "lot": "Électricité & lumières",
-   "kind": "travaux",
-   "priority": "normale",
    "minutes": 240,
-   "depends_on": [
-    "lum-dec"
-   ],
-   "note": "Avant l'enduit, sinon on casse l'enduit neuf."
-  },
-  {
-   "id": "plafonds",
-   "title": "Peindre le plafond",
-   "rooms": [
-    "ch-liam",
-    "ch-maceo",
-    "ch-solal",
-    "bureau"
-   ],
-   "lot": "Peinture",
    "kind": "travaux",
-   "priority": "normale",
-   "minutes": 240,
+   "priority": "haute",
    "depends_on": [],
-   "note": ""
+   "note": "Avant l'enduit, sinon on casse l'enduit neuf.",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.saignees"
   },
   {
-   "id": "boiseries",
-   "title": "Peindre les boiseries",
-   "rooms": [
-    "ch-liam",
-    "ch-maceo",
-    "ch-solal",
-    "bureau"
-   ],
-   "lot": "Peinture",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 180,
-   "depends_on": [
-    "termites"
-   ],
-   "note": ""
-  },
-  {
-   "id": "enduit",
-   "title": "Appliquer l'enduit chaux",
-   "rooms": [
-    "ch-liam",
-    "ch-maceo",
-    "ch-solal",
-    "bureau"
-   ],
-   "lot": "Enduit chaux",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 480,
-   "depends_on": [
-    "enduit-essais",
-    "saignees",
-    "plafonds"
-   ],
-   "note": ""
-  },
-  {
-   "id": "fenetres-turq",
-   "title": "Peindre les fenêtres en turquoise",
-   "rooms": [
-    "ch-liam",
-    "ch-maceo",
-    "ch-solal"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 240,
-   "depends_on": [
-    "turquoise-dec",
-    "termites"
-   ],
-   "note": ""
-  },
-  {
-   "id": "portes-vernis",
-   "title": "Vernir la porte",
-   "rooms": [
-    "ch-liam",
-    "ch-maceo",
-    "ch-solal"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 120,
-   "depends_on": [
-    "termites"
-   ],
-   "note": ""
-  },
-  {
-   "id": "plinthes",
-   "title": "Tester une peinture sur les plinthes",
-   "rooms": [
-    "ch-liam"
-   ],
-   "lot": "Peinture",
-   "kind": "test",
-   "priority": "normale",
-   "minutes": 60,
-   "depends_on": [],
-   "note": "Un essai dans une chambre, puis on généralise si c'est bien."
-  },
-  {
-   "id": "lumieres",
+   "id": "eclairage.4",
    "title": "Installer les lumières",
    "rooms": [
     "ch-liam",
@@ -385,35 +984,532 @@
     "sdb-parents",
     "sdb-enfants"
    ],
-   "lot": "Électricité & lumières",
-   "kind": "travaux",
-   "priority": "normale",
    "minutes": 120,
-   "depends_on": [
-    "lum-dec"
-   ],
-   "note": ""
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.installer"
   },
   {
-   "id": "balais",
-   "title": "Poser un balai de bas de porte (serpents)",
+   "id": "eclairage.5",
+   "title": "Appliques au-dessus du bar",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 120,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.installer"
+  },
+  {
+   "id": "eclairage.6",
+   "title": "Replacer toutes les lumières du salon",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 180,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.installer"
+  },
+  {
+   "id": "eclairage.7",
+   "title": "Poser des appliques",
+   "rooms": [
+    "couloirs"
+   ],
+   "minutes": 180,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "eclairage",
+   "stage_id": "eclairage.installer"
+  },
+  {
+   "id": "peinture.1",
+   "title": "Choisir peintures et couleurs",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "peinture",
+   "stage_id": "peinture.choisir"
+  },
+  {
+   "id": "peinture.2",
+   "title": "Acheter la peinture",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "peinture",
+   "stage_id": "peinture.acheter"
+  },
+  {
+   "id": "peinture.3",
+   "title": "Tester une peinture sur les plinthes",
+   "rooms": [
+    "ch-liam"
+   ],
+   "minutes": 60,
+   "kind": "test",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "Un essai, puis on généralise si c'est bien.",
+   "project_id": "peinture",
+   "stage_id": "peinture.tester"
+  },
+  {
+   "id": "peinture.4",
+   "title": "Peindre le plafond",
    "rooms": [
     "ch-liam",
     "ch-maceo",
     "ch-solal",
-    "ch-parents",
-    "ch-malik",
     "bureau"
    ],
-   "lot": "Anti-serpents",
+   "minutes": 240,
    "kind": "travaux",
-   "priority": "haute",
-   "minutes": 20,
+   "priority": "normale",
    "depends_on": [],
-   "note": ""
+   "note": "",
+   "project_id": "peinture",
+   "stage_id": "peinture.plafonds"
   },
   {
-   "id": "rideaux",
+   "id": "peinture.5",
+   "title": "Peindre les boiseries",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal",
+    "bureau"
+   ],
+   "minutes": 180,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [
+    "termites.3"
+   ],
+   "note": "",
+   "project_id": "peinture",
+   "stage_id": "peinture.boiseries"
+  },
+  {
+   "id": "peinture.6",
+   "title": "Peindre la chambre",
+   "rooms": [
+    "ch-malik"
+   ],
+   "minutes": 480,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "peinture",
+   "stage_id": "peinture.boiseries"
+  },
+  {
+   "id": "enduit.1",
+   "title": "Se documenter : recettes, dosages, supports",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 120,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "enduit",
+   "stage_id": "enduit.renseigner"
+  },
+  {
+   "id": "enduit.2",
+   "title": "Acheter chaux, sable et panneaux d'essai",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "enduit",
+   "stage_id": "enduit.acheter"
+  },
+  {
+   "id": "enduit.3",
+   "title": "Faire des essais sur panneaux",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 240,
+   "kind": "test",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "Noter chaque essai dans le carnet : recette, photo, verdict.",
+   "project_id": "enduit",
+   "stage_id": "enduit.tester"
+  },
+  {
+   "id": "enduit.4",
+   "title": "Choisir la recette",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "decision",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "enduit",
+   "stage_id": "enduit.tester"
+  },
+  {
+   "id": "enduit.5",
+   "title": "Préparer les murs (reboucher, humidifier)",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal",
+    "bureau"
+   ],
+   "minutes": 120,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [
+    "eclairage.3"
+   ],
+   "note": "",
+   "project_id": "enduit",
+   "stage_id": "enduit.preparer"
+  },
+  {
+   "id": "enduit.6",
+   "title": "Appliquer l'enduit",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal",
+    "bureau"
+   ],
+   "minutes": 480,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [
+    "peinture.4"
+   ],
+   "note": "",
+   "project_id": "enduit",
+   "stage_id": "enduit.appliquer"
+  },
+  {
+   "id": "menuiseries.1",
+   "title": "Choisir le turquoise (teinte, type de peinture)",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 45,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.choisir"
+  },
+  {
+   "id": "menuiseries.2",
+   "title": "Acheter peinture turquoise et vernis",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.acheter"
+  },
+  {
+   "id": "menuiseries.3",
+   "title": "Tester la teinte sur un cadre",
+   "rooms": [
+    "ch-liam"
+   ],
+   "minutes": 60,
+   "kind": "test",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "Étape ajoutée : voir la teinte en vrai avant de tout peindre.",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.tester"
+  },
+  {
+   "id": "menuiseries.4",
+   "title": "Poncer et préparer",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal"
+   ],
+   "minutes": 120,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [
+    "termites.3"
+   ],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.preparer"
+  },
+  {
+   "id": "menuiseries.5",
+   "title": "Peindre les fenêtres en turquoise",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.appliquer"
+  },
+  {
+   "id": "menuiseries.6",
+   "title": "Vernir la porte",
+   "rooms": [
+    "ch-liam",
+    "ch-maceo",
+    "ch-solal"
+   ],
+   "minutes": 120,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.appliquer"
+  },
+  {
+   "id": "menuiseries.7",
+   "title": "Finir la porte en turquoise",
+   "rooms": [
+    "ch-malik"
+   ],
+   "minutes": 60,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.appliquer"
+  },
+  {
+   "id": "menuiseries.8",
+   "title": "Peindre les portes-fenêtres",
+   "rooms": [
+    "ch-parents"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.appliquer"
+  },
+  {
+   "id": "menuiseries.9",
+   "title": "Peindre la porte et la porte-fenêtre",
+   "rooms": [
+    "bureau"
+   ],
+   "minutes": 180,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "menuiseries",
+   "stage_id": "menuiseries.appliquer"
+  },
+  {
+   "id": "reparations.1",
+   "title": "Mesurer et lister ce qu'il faut",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.mesurer"
+  },
+  {
+   "id": "reparations.2",
+   "title": "Acheter quincaillerie et vitre",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.acheter"
+  },
+  {
+   "id": "reparations.3",
+   "title": "Réparer la fenêtre cassée",
+   "rooms": [
+    "bureau"
+   ],
+   "minutes": 120,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.reparer"
+  },
+  {
+   "id": "reparations.4",
+   "title": "Poser une vitre sur la fenêtre",
+   "rooms": [
+    "sdb-parents"
+   ],
+   "minutes": 60,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.reparer"
+  },
+  {
+   "id": "reparations.5",
+   "title": "Réparer la porte qui ne ferme pas",
+   "rooms": [
+    "ch-parents"
+   ],
+   "minutes": 90,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "Dictée : 'porte d'entrée'. Compris comme la porte de la chambre, à confirmer.",
+   "project_id": "reparations",
+   "stage_id": "reparations.reparer"
+  },
+  {
+   "id": "reparations.6",
+   "title": "Régler la porte d'entrée",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.reparer"
+  },
+  {
+   "id": "reparations.7",
+   "title": "Faire les fenêtres",
+   "rooms": [
+    "ch-malik"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.reparer"
+  },
+  {
+   "id": "reparations.8",
+   "title": "Condamner la porte entre notre chambre et le bureau",
+   "rooms": [
+    "ch-parents"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.fermer"
+  },
+  {
+   "id": "reparations.9",
+   "title": "Fermer l'ouverture au-dessus de la porte",
+   "rooms": [
+    "ch-parents"
+   ],
+   "minutes": 180,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "reparations",
+   "stage_id": "reparations.fermer"
+  },
+  {
+   "id": "rideaux.1",
+   "title": "Choisir les rideaux",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "rideaux",
+   "stage_id": "rideaux.choisir"
+  },
+  {
+   "id": "rideaux.2",
+   "title": "Acheter les rideaux et tringles",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "rideaux",
+   "stage_id": "rideaux.acheter"
+  },
+  {
+   "id": "rideaux.3",
    "title": "Poser les rideaux",
    "rooms": [
     "ch-liam",
@@ -423,569 +1519,636 @@
     "ch-malik",
     "bureau"
    ],
-   "lot": "Rideaux",
+   "minutes": 45,
    "kind": "travaux",
    "priority": "normale",
-   "minutes": 45,
-   "depends_on": [
-    "rideaux-dec"
-   ],
-   "note": ""
+   "depends_on": [],
+   "note": "",
+   "project_id": "rideaux",
+   "stage_id": "rideaux.poser"
   },
   {
-   "id": "sdb-peinture",
+   "id": "sdb.1",
+   "title": "Carrelage ou autre finition ?",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "sdb",
+   "stage_id": "sdb.decider"
+  },
+  {
+   "id": "sdb.2",
+   "title": "Acheter peinture et matériaux",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "sdb",
+   "stage_id": "sdb.acheter"
+  },
+  {
+   "id": "sdb.3",
    "title": "Peindre la salle de bain",
    "rooms": [
     "sdb-parents",
     "sdb-enfants"
    ],
-   "lot": "Peinture",
+   "minutes": 360,
    "kind": "travaux",
    "priority": "normale",
-   "minutes": 360,
-   "depends_on": [],
-   "note": ""
+   "depends_on": [
+    "termites.3"
+   ],
+   "note": "",
+   "project_id": "sdb",
+   "stage_id": "sdb.peindre"
   },
   {
-   "id": "sdb-finition",
-   "title": "Carrelage ou autre finition : décider",
+   "id": "sdb.4",
+   "title": "Poser la finition choisie",
    "rooms": [
     "sdb-parents",
     "sdb-enfants"
    ],
-   "lot": "Finitions",
-   "kind": "decision",
-   "priority": "normale",
-   "minutes": 60,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "porte-bureau",
-   "title": "Condamner la porte entre notre chambre et le bureau",
-   "rooms": [
-    "ch-parents"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 240,
-   "depends_on": [],
-   "note": "Une seule opération pour les deux pièces."
-  },
-  {
-   "id": "porte-chambre",
-   "title": "Réparer la porte de la chambre qui ne ferme pas",
-   "rooms": [
-    "ch-parents"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 90,
-   "depends_on": [],
-   "note": "Dictée : 'porte d'entrée'. Compris comme la porte de la chambre, à confirmer."
-  },
-  {
-   "id": "dessus-porte",
-   "title": "Fermer l'ouverture au-dessus de la porte",
-   "rooms": [
-    "ch-parents"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 180,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "boiseries-dec",
-   "title": "Boiseries : les exploiter ou les fondre dans le mur ?",
-   "rooms": [
-    "ch-parents"
-   ],
-   "lot": "Boiseries",
-   "kind": "decision",
-   "priority": "normale",
-   "minutes": 30,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "boiseries-parents",
-   "title": "Boiseries : réaliser l'option choisie",
-   "rooms": [
-    "ch-parents"
-   ],
-   "lot": "Boiseries",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 240,
-   "depends_on": [
-    "boiseries-dec",
-    "termites-dec"
-   ],
-   "note": ""
-  },
-  {
-   "id": "pf-parents",
-   "title": "Peindre les portes-fenêtres",
-   "rooms": [
-    "ch-parents"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 240,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "malik-fenetres",
-   "title": "Faire les fenêtres",
-   "rooms": [
-    "ch-malik"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 240,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "malik-peinture",
-   "title": "Peindre la chambre",
-   "rooms": [
-    "ch-malik"
-   ],
-   "lot": "Peinture",
-   "kind": "travaux",
-   "priority": "normale",
    "minutes": 480,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "malik-porte",
-   "title": "Finir de peindre la porte en turquoise",
-   "rooms": [
-    "ch-malik"
-   ],
-   "lot": "Portes & fenêtres",
    "kind": "travaux",
    "priority": "normale",
-   "minutes": 60,
-   "depends_on": [
-    "turquoise-dec"
-   ],
-   "note": ""
+   "depends_on": [],
+   "note": "",
+   "project_id": "sdb",
+   "stage_id": "sdb.finitions"
   },
   {
-   "id": "malik-ventilo",
+   "id": "ventilos.1",
+   "title": "Trouver comment poser un ventilateur",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 90,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "ventilos",
+   "stage_id": "ventilos.technique"
+  },
+  {
+   "id": "ventilos.2",
+   "title": "Acheter le(s) ventilateur(s)",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "ventilos",
+   "stage_id": "ventilos.acheter"
+  },
+  {
+   "id": "ventilos.3",
    "title": "Installer un ventilateur",
    "rooms": [
     "ch-malik"
    ],
-   "lot": "Ventilation",
-   "kind": "travaux",
-   "priority": "normale",
    "minutes": 120,
-   "depends_on": [
-    "ventilo-dec"
-   ],
-   "note": "Ajoute les autres pièces qui en ont besoin."
-  },
-  {
-   "id": "bureau-rangement",
-   "title": "Ranger le bureau et virer le bazar",
-   "rooms": [
-    "bureau"
-   ],
-   "lot": "Rangement",
-   "kind": "travaux",
-   "priority": "haute",
-   "minutes": 240,
-   "depends_on": [],
-   "note": "Débloque tout le reste de la pièce."
-  },
-  {
-   "id": "bureau-poutres",
-   "title": "Combler les trous en haut des murs (poutres) : planches ou autre",
-   "rooms": [
-    "bureau"
-   ],
-   "lot": "Boiseries",
    "kind": "travaux",
    "priority": "normale",
-   "minutes": 480,
    "depends_on": [],
-   "note": ""
+   "note": "Ajoute les autres pièces qui en ont besoin.",
+   "project_id": "ventilos",
+   "stage_id": "ventilos.installer"
   },
   {
-   "id": "bureau-portes",
-   "title": "Peindre la porte et la porte-fenêtre",
+   "id": "salon-chaux.1",
+   "title": "Acheter la chaux pour le salon",
    "rooms": [
-    "bureau"
+    "maison"
    ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
+   "minutes": 30,
+   "kind": "achat",
    "priority": "normale",
-   "minutes": 180,
    "depends_on": [],
-   "note": ""
+   "note": "",
+   "project_id": "salon-chaux",
+   "stage_id": "salon-chaux.acheter"
   },
   {
-   "id": "bureau-fenetre",
-   "title": "Réparer la fenêtre cassée",
-   "rooms": [
-    "bureau"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "haute",
-   "minutes": 120,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "sdb-vitre",
-   "title": "Poser une vitre sur la fenêtre",
-   "rooms": [
-    "sdb-parents"
-   ],
-   "lot": "Portes & fenêtres",
-   "kind": "travaux",
-   "priority": "haute",
-   "minutes": 60,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "sdb-eau",
-   "title": "Évacuation d'eau : stagne et déborde",
-   "rooms": [
-    "sdb-enfants"
-   ],
-   "lot": "Plomberie",
-   "kind": "travaux",
-   "priority": "urgente",
-   "minutes": 240,
-   "depends_on": [],
-   "note": "Risque de dégâts des eaux : avant toute finition."
-  },
-  {
-   "id": "chaux-prep",
-   "title": "Préparer la chaux (éteindre, laisser reposer)",
+   "id": "salon-chaux.2",
+   "title": "Éteindre la chaux et la laisser reposer",
    "rooms": [
     "salon"
    ],
-   "lot": "Enduit chaux",
+   "minutes": 120,
    "kind": "travaux",
    "priority": "normale",
-   "minutes": 120,
    "depends_on": [],
-   "note": "Chaux vive = caustique : lunettes et gants."
+   "note": "Chaux vive = caustique : lunettes et gants.",
+   "project_id": "salon-chaux",
+   "stage_id": "salon-chaux.preparer"
   },
   {
-   "id": "chaux-reprise",
+   "id": "salon-chaux.3",
    "title": "Reprendre la chaux aux endroits cassés",
    "rooms": [
     "salon"
    ],
-   "lot": "Enduit chaux",
-   "kind": "travaux",
-   "priority": "normale",
    "minutes": 240,
-   "depends_on": [
-    "chaux-prep"
-   ],
-   "note": ""
-  },
-  {
-   "id": "dalles",
-   "title": "Couvrir les tranches de dalles en ciment apparent",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Finitions",
    "kind": "travaux",
    "priority": "normale",
-   "minutes": 480,
    "depends_on": [],
-   "note": ""
+   "note": "",
+   "project_id": "salon-chaux",
+   "stage_id": "salon-chaux.appliquer"
   },
   {
-   "id": "poteaux-dec",
+   "id": "poteaux.1",
    "title": "Poteaux : peindre ou habiller ?",
    "rooms": [
     "salon"
    ],
-   "lot": "Finitions",
-   "kind": "decision",
-   "priority": "normale",
    "minutes": 30,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "poteaux",
-   "title": "Poteaux : réaliser l'option choisie",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Finitions",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 480,
-   "depends_on": [
-    "poteaux-dec"
-   ],
-   "note": ""
-  },
-  {
-   "id": "plancher-buanderie",
-   "title": "Plancher au-dessus de la buanderie",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Structure",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 960,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "tiroir",
-   "title": "Séparateurs dans le tiroir à couverts",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Mobilier",
-   "kind": "travaux",
-   "priority": "basse",
-   "minutes": 15,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "appliques-bar",
-   "title": "Appliques au-dessus du bar",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Électricité & lumières",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 120,
-   "depends_on": [
-    "lum-dec"
-   ],
-   "note": ""
-  },
-  {
-   "id": "lumieres-salon",
-   "title": "Replacer toutes les lumières",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Électricité & lumières",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 180,
-   "depends_on": [
-    "lum-dec"
-   ],
-   "note": ""
-  },
-  {
-   "id": "sous-escalier",
-   "title": "Meubles sous l'escalier",
-   "rooms": [
-    "salon"
-   ],
-   "lot": "Mobilier",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 960,
-   "depends_on": [],
-   "note": ""
-  },
-  {
-   "id": "appliques-couloirs",
-   "title": "Poser des appliques",
-   "rooms": [
-    "couloirs"
-   ],
-   "lot": "Électricité & lumières",
-   "kind": "travaux",
-   "priority": "normale",
-   "minutes": 180,
-   "depends_on": [
-    "lum-dec"
-   ],
-   "note": ""
-  },
-  {
-   "id": "aile-dec",
-   "title": "Autre aile : escalier ou appartement indépendant ?",
-   "rooms": [
-    "aile"
-   ],
-   "lot": "Autre aile",
    "kind": "decision",
-   "priority": "haute",
-   "minutes": 60,
+   "priority": "normale",
    "depends_on": [],
-   "note": "Préférence : appartement. Mais un escalier depuis le salon réduit l'indépendance."
+   "note": "",
+   "project_id": "poteaux",
+   "stage_id": "poteaux.decider"
   },
   {
-   "id": "aile-mur",
-   "title": "Monter le mur de séparation",
+   "id": "poteaux.2",
+   "title": "Acheter le nécessaire",
    "rooms": [
-    "aile"
+    "maison"
    ],
-   "lot": "Autre aile",
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "poteaux",
+   "stage_id": "poteaux.acheter"
+  },
+  {
+   "id": "poteaux.3",
+   "title": "Traiter les poteaux",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 480,
    "kind": "travaux",
    "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "poteaux",
+   "stage_id": "poteaux.realiser"
+  },
+  {
+   "id": "dalles.1",
+   "title": "Comment couvrir le ciment apparent ?",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 30,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "dalles",
+   "stage_id": "dalles.decider"
+  },
+  {
+   "id": "dalles.2",
+   "title": "Acheter le nécessaire",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "dalles",
+   "stage_id": "dalles.acheter"
+  },
+  {
+   "id": "dalles.3",
+   "title": "Couvrir les tranches de dalles",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 480,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "dalles",
+   "stage_id": "dalles.realiser"
+  },
+  {
+   "id": "plancher.1",
+   "title": "Choisir la structure et le bois",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 60,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "plancher",
+   "stage_id": "plancher.concevoir"
+  },
+  {
+   "id": "plancher.2",
+   "title": "Acheter le bois et la visserie",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "plancher",
+   "stage_id": "plancher.acheter"
+  },
+  {
+   "id": "plancher.3",
+   "title": "Poser le plancher",
+   "rooms": [
+    "salon"
+   ],
    "minutes": 960,
-   "depends_on": [
-    "aile-dec"
-   ],
-   "note": ""
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "plancher",
+   "stage_id": "plancher.construire"
   },
   {
-   "id": "aile-terrasse",
-   "title": "Ouvrir derrière : terrasse et porte-fenêtre",
+   "id": "bureau.1",
+   "title": "Ranger le bureau et virer le bazar",
+   "rooms": [
+    "bureau"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "haute",
+   "depends_on": [],
+   "note": "Débloque tout le reste de la pièce.",
+   "project_id": "bureau",
+   "stage_id": "bureau.ranger"
+  },
+  {
+   "id": "bureau.2",
+   "title": "Combler les trous des poutres : planches ou autre ?",
+   "rooms": [
+    "bureau"
+   ],
+   "minutes": 30,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "bureau",
+   "stage_id": "bureau.concevoir"
+  },
+  {
+   "id": "bureau.3",
+   "title": "Acheter les planches",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 30,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "bureau",
+   "stage_id": "bureau.acheter"
+  },
+  {
+   "id": "bureau.4",
+   "title": "Combler les trous en haut des murs",
+   "rooms": [
+    "bureau"
+   ],
+   "minutes": 480,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "bureau",
+   "stage_id": "bureau.poser"
+  },
+  {
+   "id": "boiseries-parents.1",
+   "title": "Les exploiter ou les fondre dans le mur ?",
+   "rooms": [
+    "ch-parents"
+   ],
+   "minutes": 30,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "boiseries-parents",
+   "stage_id": "boiseries-parents.decider"
+  },
+  {
+   "id": "boiseries-parents.2",
+   "title": "Réaliser l'option choisie",
+   "rooms": [
+    "ch-parents"
+   ],
+   "minutes": 240,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "boiseries-parents",
+   "stage_id": "boiseries-parents.realiser"
+  },
+  {
+   "id": "penderie.1",
+   "title": "Dessiner le meuble et ses dimensions",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 90,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "penderie",
+   "stage_id": "penderie.concevoir"
+  },
+  {
+   "id": "penderie.2",
+   "title": "Acheter bois et quincaillerie",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "penderie",
+   "stage_id": "penderie.acheter"
+  },
+  {
+   "id": "penderie.3",
+   "title": "Construire la penderie",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 960,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "penderie",
+   "stage_id": "penderie.construire"
+  },
+  {
+   "id": "sous-escalier.1",
+   "title": "Dessiner les meubles",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 90,
+   "kind": "decision",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "sous-escalier",
+   "stage_id": "sous-escalier.concevoir"
+  },
+  {
+   "id": "sous-escalier.2",
+   "title": "Acheter bois et quincaillerie",
+   "rooms": [
+    "maison"
+   ],
+   "minutes": 60,
+   "kind": "achat",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "sous-escalier",
+   "stage_id": "sous-escalier.acheter"
+  },
+  {
+   "id": "sous-escalier.3",
+   "title": "Construire les meubles",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 960,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "sous-escalier",
+   "stage_id": "sous-escalier.construire"
+  },
+  {
+   "id": "aile.1",
+   "title": "Escalier ou appartement indépendant ?",
    "rooms": [
     "aile"
    ],
-   "lot": "Autre aile",
-   "kind": "travaux",
+   "minutes": 60,
+   "kind": "decision",
    "priority": "normale",
-   "minutes": 1920,
-   "depends_on": [
-    "aile-dec"
-   ],
-   "note": ""
+   "depends_on": [],
+   "note": "",
+   "project_id": "aile",
+   "stage_id": "aile.decider"
   },
   {
-   "id": "aile-escalier",
+   "id": "aile.2",
    "title": "Escalier : extérieur ou depuis le salon ?",
    "rooms": [
     "aile"
    ],
-   "lot": "Autre aile",
+   "minutes": 60,
    "kind": "decision",
    "priority": "normale",
-   "minutes": 60,
-   "depends_on": [
-    "aile-dec"
+   "depends_on": [],
+   "note": "",
+   "project_id": "aile",
+   "stage_id": "aile.decider"
+  },
+  {
+   "id": "aile.3",
+   "title": "Monter le mur de séparation",
+   "rooms": [
+    "aile"
    ],
-   "note": ""
+   "minutes": 960,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "aile",
+   "stage_id": "aile.travaux"
+  },
+  {
+   "id": "aile.4",
+   "title": "Ouvrir derrière : terrasse et porte-fenêtre",
+   "rooms": [
+    "aile"
+   ],
+   "minutes": 1920,
+   "kind": "travaux",
+   "priority": "normale",
+   "depends_on": [],
+   "note": "",
+   "project_id": "aile",
+   "stage_id": "aile.travaux"
+  },
+  {
+   "id": "petit.tiroir",
+   "title": "Séparateurs dans le tiroir à couverts",
+   "rooms": [
+    "salon"
+   ],
+   "minutes": 15,
+   "kind": "achat",
+   "priority": "basse",
+   "depends_on": [],
+   "note": "",
+   "project_id": null,
+   "stage_id": null
   }
  ],
  "options": [
   {
-   "id": "lum-dec-o1",
-   "task_id": "lum-dec",
+   "id": "eclairage.1.o1",
+   "task_id": "eclairage.1",
    "label": "Spots encastrés"
   },
   {
-   "id": "lum-dec-o2",
-   "task_id": "lum-dec",
+   "id": "eclairage.1.o2",
+   "task_id": "eclairage.1",
    "label": "Abat-jour / suspensions"
   },
   {
-   "id": "lum-dec-o3",
-   "task_id": "lum-dec",
+   "id": "eclairage.1.o3",
+   "task_id": "eclairage.1",
    "label": "Mixte selon les pièces"
   },
   {
-   "id": "boiseries-dec-o1",
-   "task_id": "boiseries-dec",
-   "label": "Les exploiter pour suspendre des choses"
-  },
-  {
-   "id": "boiseries-dec-o2",
-   "task_id": "boiseries-dec",
-   "label": "Les peindre couleur mur pour les fondre"
-  },
-  {
-   "id": "poteaux-dec-o1",
-   "task_id": "poteaux-dec",
+   "id": "poteaux.1.o1",
+   "task_id": "poteaux.1",
    "label": "Peindre"
   },
   {
-   "id": "poteaux-dec-o2",
-   "task_id": "poteaux-dec",
+   "id": "poteaux.1.o2",
+   "task_id": "poteaux.1",
    "label": "Habiller (bois, corde, enduit…)"
   },
   {
-   "id": "aile-dec-o1",
-   "task_id": "aile-dec",
+   "id": "boiseries-parents.1.o1",
+   "task_id": "boiseries-parents.1",
+   "label": "Les exploiter pour suspendre des choses"
+  },
+  {
+   "id": "boiseries-parents.1.o2",
+   "task_id": "boiseries-parents.1",
+   "label": "Les peindre couleur mur pour les fondre"
+  },
+  {
+   "id": "aile.1.o1",
+   "task_id": "aile.1",
    "label": "Escalier depuis la maison"
   },
   {
-   "id": "aile-dec-o2",
-   "task_id": "aile-dec",
+   "id": "aile.1.o2",
+   "task_id": "aile.1",
    "label": "Appartement indépendant"
   },
   {
-   "id": "aile-escalier-o1",
-   "task_id": "aile-escalier",
+   "id": "aile.2.o1",
+   "task_id": "aile.2",
    "label": "Escalier extérieur"
   },
   {
-   "id": "aile-escalier-o2",
-   "task_id": "aile-escalier",
+   "id": "aile.2.o2",
+   "task_id": "aile.2",
    "label": "Escalier depuis le salon"
   }
  ],
  "shopping": [
   {
-   "id": "c-chaux",
-   "label": "Chaux aérienne",
-   "qty": "1 sac",
-   "store": "Matériaux",
-   "task_id": "enduit-essais"
-  },
-  {
-   "id": "c-sable",
-   "label": "Sable fin",
-   "qty": "1 sac",
-   "store": "Matériaux",
-   "task_id": "enduit-essais"
-  },
-  {
-   "id": "c-panneaux",
-   "label": "Panneaux pour les essais d'enduit",
-   "qty": "3-4",
-   "store": "Bricolage",
-   "task_id": "enduit-essais"
-  },
-  {
-   "id": "c-balais",
+   "id": "c1",
    "label": "Balais de bas de porte",
    "qty": "6",
    "store": "Bricolage",
-   "task_id": "balais"
+   "task_id": "serpents.1"
   },
   {
-   "id": "c-tiroir",
+   "id": "c2",
+   "label": "Produit anti-termites",
+   "qty": "",
+   "store": "",
+   "task_id": "termites.2"
+  },
+  {
+   "id": "c3",
+   "label": "Chaux aérienne",
+   "qty": "1 sac",
+   "store": "Matériaux",
+   "task_id": "enduit.2"
+  },
+  {
+   "id": "c4",
+   "label": "Sable fin",
+   "qty": "1 sac",
+   "store": "Matériaux",
+   "task_id": "enduit.2"
+  },
+  {
+   "id": "c5",
+   "label": "Panneaux pour les essais",
+   "qty": "3-4",
+   "store": "Bricolage",
+   "task_id": "enduit.2"
+  },
+  {
+   "id": "c6",
+   "label": "Vitre sur mesure (après mesure)",
+   "qty": "1",
+   "store": "Vitrier",
+   "task_id": "reparations.2"
+  },
+  {
+   "id": "c7",
+   "label": "Chaux pour le salon",
+   "qty": "",
+   "store": "Matériaux",
+   "task_id": "salon-chaux.1"
+  },
+  {
+   "id": "c8",
    "label": "Séparateurs de tiroir à couverts",
    "qty": "1",
    "store": "",
-   "task_id": "tiroir"
-  },
-  {
-   "id": "c-vitre",
-   "label": "Vitre sur mesure (mesurer avant)",
-   "qty": "1",
-   "store": "Vitrier",
-   "task_id": "sdb-vitre"
+   "task_id": "petit.tiroir"
   }
  ]
 }

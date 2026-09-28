@@ -13,9 +13,13 @@ def q(v):
 out = ["-- Généré par scripts/gen_seed.py. Ajoutez vos e-mails dans members avant (voir SETUP.md).", "begin;"]
 for r in d["rooms"]:
     out.append(f"insert into rooms (id, name, sort) values ({q(r['id'])}, {q(r['name'])}, {r['sort']});")
+for p in d["projects"]:
+    out.append(f"insert into projects (id, title, priority, note, sort) values ({q(p['id'])}, {q(p['title'])}, {q(p['priority'])}, {q(p['note'])}, {p['sort']});")
+for s in d["stages"]:
+    out.append(f"insert into stages (id, project_id, title, kind, sort) values ({q(s['id'])}, {q(s['project_id'])}, {q(s['title'])}, {q(s['kind'])}, {s['sort']});")
 for t in d["tasks"]:
-    out.append("insert into tasks (id, title, lot, kind, priority, minutes, note, depends_on) values "
-               f"({q(t['id'])}, {q(t['title'])}, {q(t['lot'])}, {q(t['kind'])}, {q(t['priority'])}, {q(t['minutes'])}, {q(t['note'])}, {q(t['depends_on'])});")
+    out.append("insert into tasks (id, title, project_id, stage_id, kind, priority, minutes, note, depends_on) values "
+               f"({q(t['id'])}, {q(t['title'])}, {q(t['project_id'])}, {q(t['stage_id'])}, {q(t['kind'])}, {q(t['priority'])}, {q(t['minutes'])}, {q(t['note'])}, {q(t['depends_on'])});")
     for r in t["rooms"]:
         out.append(f"insert into task_rooms (task_id, room_id) values ({q(t['id'])}, {q(r)});")
 for o in d["options"]:
@@ -27,6 +31,8 @@ out.append("commit;")
 
 demo = {
     "rooms": d["rooms"],
+    "projects": d["projects"],
+    "stages": d["stages"],
     "tasks": [{k: v for k, v in t.items() if k != "rooms"} | {"assignee": None} for t in d["tasks"]],
     "task_rooms": [{"task_id": t["id"], "room_id": r, "done_at": None, "done_by": None} for t in d["tasks"] for r in t["rooms"]],
     "options": [o | {"price": None, "note": "", "photo": None, "chosen": False} for o in d["options"]],

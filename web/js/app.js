@@ -16,7 +16,14 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const uid = () => crypto.randomUUID();
 const now = () => new Date().toISOString();
 const roomName = (id) => S.roomById.get(id)?.name || "Pièce supprimée";
-const KIND = { travaux: "Travaux", decision: "Décision", test: "Essai" };
+const KIND = { travaux: "Travaux", decision: "Décision", test: "Essai", achat: "Achat" };
+const STAGE_KIND = { decider: "Décider", acheter: "Acheter", tester: "Tester", preparer: "Préparer", appliquer: "Appliquer", finir: "Finir", autre: "Autre" };
+const TEMPLATES = [
+  ["finition", "Peinture, enduit", [["Choisir", "decider"], ["Acheter", "acheter"], ["Tester", "tester"], ["Préparer", "preparer"], ["Appliquer", "appliquer"]]],
+  ["reparation", "Réparation", [["Diagnostiquer", "decider"], ["Acheter", "acheter"], ["Réparer", "appliquer"], ["Vérifier", "finir"]]],
+  ["construction", "Construction, meuble", [["Concevoir", "decider"], ["Acheter", "acheter"], ["Construire", "appliquer"], ["Finitions", "finir"]]],
+  ["simple", "Simple", [["Décider", "decider"], ["Acheter", "acheter"], ["Faire", "appliquer"]]],
+];
 const PRIO = { urgente: "Urgente", haute: "Haute", normale: "Normale", basse: "Basse" };
 const MINUTES = [15, 30, 60, 120, 240, 480, 960];
 const SLOTS = [[30, "30 min"], [60, "1 h"], [120, "2 h"], [240, "½ journée"], [480, "Journée"]];
@@ -26,6 +33,7 @@ const ICON = {
   rooms: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>',
   mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>',
   sessions: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  projects: '<circle cx="5" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><path d="M5 8v8"/><path d="M10 6h10M10 12h10M10 18h7"/><circle cx="5" cy="12" r="2"/>',
   shop: '<path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
   check: '<path d="M4 12.5l5 5L20 6.5" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
 };
@@ -119,7 +127,7 @@ function renderWhoAmI() {
 
 /* ============ rendu ============ */
 function render() {
-  const html = { today: viewToday, rooms: viewRooms, sessions: viewSessions, shop: viewShop }[view]();
+  const html = ({ today: viewToday, projects: viewProjects, rooms: viewRooms, sessions: viewSessions, shop: viewShop }[view] || viewToday)();
   $("#app").innerHTML = html + tabbar();
   renderSheet();
 }
@@ -129,19 +137,20 @@ function tabbar() {
   const tab = (id, label, icon, badge = "") => `<button data-a="tab" data-v="${id}" ${view === id ? 'aria-current="page"' : ""}>${svg(icon)}${badge}<span>${label}</span></button>`;
   return `<nav class="tabs"><div class="in">
     ${tab("today", "Aujourd'hui", "today")}
-    ${tab("rooms", "Pièces", "rooms")}
+    ${tab("projects", "Chantiers", "projects")}
     <button class="mic" data-a="dictee" aria-label="Dicter">${svg("mic")}</button>
-    ${tab("sessions", "Sessions", "sessions")}
+    ${tab("rooms", "Pièces", "rooms")}
     ${tab("shop", "Courses", "shop", toBuy ? `<span class="badge">${toBuy}</span>` : "")}
   </div></nav>`;
 }
 
-function itemRow(task, roomId, { showRoom = true, blocked = null } = {}) {
+function itemRow(task, roomId, { showRoom = true, blocked = null, showProject = true } = {}) {
   const pair = task.pairs.find((p) => p.room_id === roomId);
   const done = pair && L.pairDone(pair);
   const blk = blocked ?? (done ? [] : L.blockers(S, task, roomId));
   const meta = [];
-  if (showRoom) meta.push(`<span>${esc(roomName(roomId))}</span>`);
+  if (showProject && task.project) meta.push(`<span>${esc(shortTitle(task.project.title))}${task.stage ? ` › ${esc(task.stage.title)}` : ""}</span>`);
+  if (showRoom && (roomId !== "maison" || !task.project)) meta.push(`<span>${esc(roomName(roomId))}</span>`);
   if (task.kind !== "travaux") meta.push(`<span class="tag k-${task.kind}">${KIND[task.kind]}</span>`);
   if (blk.length && !done) meta.push(`<span class="tag blk">Attend : ${esc(blk.map((b) => shortTitle(b.title)).join(", "))}</span>`);
   if (task.minutes && !done) meta.push(`<span>${L.fmtMinutes(task.minutes)}</span>`);
@@ -164,8 +173,8 @@ function viewToday() {
   const wk = L.doneThisWeek(S);
   const today = L.isoDay(new Date());
   const live = S.sessions.find((s) => s.day === today);
-  const quick = L.quickWins(S, S.me);
-  const urgent = L.urgent(S);
+  const seen = new Set();
+  const fresh = (items) => items.filter((i) => { const k = i.task.id + "|" + i.room_id; if (seen.has(k)) return false; seen.add(k); return true; });
   const decisions = L.blockingDecisions(S);
   const parts = [];
 
@@ -190,6 +199,22 @@ function viewToday() {
     </section>`);
   }
 
+  const infos = L.projectsByState(S).filter((i) => !i.complete);
+  const active = infos.filter((i) => i.started).slice(0, 3);
+  const shown = active.length ? active : infos.slice(0, 3);
+  if (live) fresh((live.items || []).map((it) => ({ task: { id: it.task_id }, room_id: it.room_id })));
+  for (const i of shown) fresh(L.nextActions(S, i.project, 1));
+  const urgent = fresh(L.urgent(S));
+  const quick = fresh(L.quickWins(S, S.me, 8)).slice(0, 4);
+  if (shown.length) parts.push(`<section class="block"><div class="block-head"><h2>${active.length ? "Chantiers en cours" : "Chantiers à lancer"}</h2><button class="more" data-a="tab" data-v="projects">Tous</button></div>
+    <div class="projs">${shown.map((i) => projectCard(i, true)).join("")}</div></section>`);
+
+  const upcoming = S.sessions.filter((x) => x.day > today).sort((a, b) => a.day.localeCompare(b.day))[0];
+  parts.push(`<section class="block"><div class="block-head"><h2>Sessions</h2><button class="more" data-a="tab" data-v="sessions">Toutes</button></div>
+    ${upcoming ? `<button class="btn wide" style="text-align:left" data-a="sessionEdit" data-s="${esc(upcoming.id)}">Prochaine : ${esc(dayLabel(upcoming.day))}${upcoming.label ? " · " + esc(upcoming.label) : ""} <span class="hint">(${L.sessionStats(S, upcoming).total} tâches)</span></button>`
+      : `<button class="btn wide" data-a="sessionNew">Préparer la prochaine session à deux</button>`}
+  </section>`);
+
   parts.push(`<section class="block"><div class="block-head"><h2>On a combien de temps ?</h2></div>
     <div class="slots">${SLOTS.map(([m, l]) => `<button class="slot" data-a="slot" data-m="${m}">${l}</button>`).join("")}</div>
     <p class="hint">L'app choisit ce qui est débloqué et prioritaire, en regroupant par pièce.</p></section>`);
@@ -212,7 +237,7 @@ function feed(n) {
 }
 
 function viewRooms() {
-  const seg = `<div class="seg">${[["rooms", "Pièces"], ["lots", "Lots"], ["all", "Tout"]].map(([k, l]) => `<button data-a="roomsMode" data-v="${k}" aria-pressed="${roomsMode === k}">${l}</button>`).join("")}</div>`;
+  const seg = `<div class="seg">${[["rooms", "Pièces"], ["all", "Toutes les tâches"]].map(([k, l]) => `<button data-a="roomsMode" data-v="${k}" aria-pressed="${roomsMode === k}">${l}</button>`).join("")}</div>`;
   let body = "";
   if (roomsMode === "rooms") {
     const stats = L.roomStats(S).filter((r) => r.total);
@@ -226,29 +251,131 @@ function viewRooms() {
       </button>`;
     }).join("")}</div>
     <button class="btn wide" data-a="newRoom">Ajouter une pièce</button>`;
-  } else if (roomsMode === "lots") {
-    const lots = new Map();
-    for (const t of S.tasks.values()) { const k = t.lot || "Divers"; if (!lots.has(k)) lots.set(k, []); lots.get(k).push(t); }
-    body = [...lots.entries()].sort((a, b) => a[0].localeCompare(b[0], "fr")).map(([lot, ts]) => {
-      const pairs = ts.flatMap((t) => t.pairs.map((p) => ({ t, p })));
-      const open = pairs.filter(({ p }) => !L.pairDone(p));
-      return `<section class="block"><div class="group-title"><h2>${esc(lot)}</h2><span>${pairs.length - open.length}/${pairs.length}</span></div>
-        ${open.length ? list(open.map(({ t, p }) => itemRow(t, p.room_id))) : `<div class="empty">Tout est fait.</div>`}</section>`;
-    }).join("");
   } else {
     const q = norm(search);
     const rows = [];
     for (const t of S.tasks.values()) for (const p of t.pairs) {
-      if (q && !norm(t.title + " " + roomName(p.room_id) + " " + t.lot).includes(q)) continue;
+      if (q && !norm(t.title + " " + roomName(p.room_id) + " " + (t.project?.title || "") + " " + (t.stage?.title || "")).includes(q)) continue;
       rows.push({ t, p });
     }
     rows.sort((a, b) => L.pairDone(a.p) - L.pairDone(b.p) || L.PRIO_WEIGHT[b.t.priority] - L.PRIO_WEIGHT[a.t.priority]);
-    body = `<input class="search" id="search" type="search" placeholder="Chercher : turquoise, Liam, termites…" value="${esc(search)}">
+    body = `<input class="search" id="search" type="search" placeholder="Chercher : turquoise, Liam, acheter…" value="${esc(search)}">
       ${rows.length ? list(rows.slice(0, 150).map(({ t, p }) => itemRow(t, p.room_id))) : `<div class="empty">Rien ne correspond.</div>`}`;
   }
   return `<main class="view"><div class="v-head"><h1>Pièces</h1><button class="btn small" data-a="newTask">+ Tâche</button></div>${seg}${body}</main>`;
 }
 const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+function track(info) {
+  return `<ol class="track" style="--n:${Math.max(info.stages.length, 1)}">${info.stages.map((x) => {
+    const state = x.complete ? "done" : info.current && x.stage.id === info.current.stage.id ? "current" : x.empty ? "void" : "todo";
+    return `<li class="${state}"><i>${x.complete ? svg("check") : ""}</i><em>${esc(x.stage.title)}</em></li>`;
+  }).join("")}</ol>`;
+}
+
+function projectCard(info, compact = false) {
+  const p = info.project;
+  const next = L.nextActions(S, p, 1)[0];
+  const status = info.complete ? "Terminé" : info.current ? `Étape ${info.stages.indexOf(info.current) + 1}/${info.stages.length} : ${info.current.stage.title}` : "Aucune tâche";
+  return `<div class="proj p-${esc(p.priority)} ${info.complete ? "complete" : ""}">
+    <button class="proj-main" data-a="project" data-p="${esc(p.id)}">
+      <span class="proj-top"><span class="proj-title">${esc(p.title)}</span>${p.priority === "urgente" || p.priority === "haute" ? `<span class="tag prio-${p.priority}">${PRIO[p.priority]}</span>` : ""}</span>
+      ${track(info)}
+      <span class="meta"><span><b>${esc(status)}</b></span>${info.minutesLeft && !info.complete ? `<span>reste ${esc(L.fmtMinutes(info.minutesLeft))}</span>` : ""}</span>
+    </button>
+    ${next && compact ? list([itemRow(next.task, next.room_id, { showProject: false, blocked: [] })]) : ""}
+  </div>`;
+}
+
+function viewProjects() {
+  const infos = L.projectsByState(S);
+  const active = infos.filter((i) => i.started);
+  const todo = infos.filter((i) => !i.started && !i.complete);
+  const done = infos.filter((i) => i.complete);
+  const loose = [...S.tasks.values()].filter((t) => !t.project_id && !L.taskDone(t));
+  const sec = (title, arr, hint = "") => arr.length ? `<section class="block"><div class="block-head"><h2>${title}</h2><span class="hint">${hint || arr.length}</span></div><div class="projs">${arr.map((i) => projectCard(i)).join("")}</div></section>` : "";
+  return `<main class="view">
+    <div class="v-head"><div><h1>Chantiers</h1><p class="sub">Chaque chantier avance étape par étape : décider, acheter, tester, appliquer.</p></div><button class="btn small" data-a="projectNew">+ Chantier</button></div>
+    ${sec("En cours", active)}
+    ${sec("À lancer", todo, "par priorité")}
+    ${loose.length ? `<section class="block"><div class="block-head"><h2>Petits travaux</h2><span class="hint">sans étapes</span></div>${list(loose.flatMap((t) => t.pairs.filter((p) => !L.pairDone(p)).map((p) => itemRow(t, p.room_id))))}</section>` : ""}
+    ${sec("Terminés", done)}
+  </main>`;
+}
+
+function sheetProject(st) {
+  const p = S.projectById.get(st.id);
+  if (!p) return null;
+  const info = L.projectInfo(S, p);
+  const stagesHtml = info.stages.map((x, i) => {
+    const state = x.complete ? "done" : info.current && x.stage.id === info.current.stage.id ? "current" : "todo";
+    const editing = st.editStage === x.stage.id;
+    const items = x.tasks.flatMap((t) => t.pairs.map((pr) => itemRow(t, pr.room_id, { showProject: false })));
+    const shop = x.stage.kind === "acheter" ? S.shopping.filter((it) => x.tasks.some((t) => t.id === it.task_id)) : [];
+    return `<section class="stage ${state}">
+      <div class="stage-rail"><span class="stage-dot">${x.complete ? svg("check") : i + 1}</span></div>
+      <div class="stage-body">
+        <div class="stage-head"><div style="min-width:0;flex:1"><h3>${esc(x.stage.title)}</h3><span class="hint">${esc(STAGE_KIND[x.stage.kind] || "")}${x.total ? ` · ${x.done}/${x.total}` : ""}${x.minutesLeft ? ` · ${esc(L.fmtMinutes(x.minutesLeft))}` : ""}</span></div>
+          <button class="x" data-a="stageEdit" data-s="${esc(x.stage.id)}" aria-label="Modifier l'étape">…</button></div>
+        ${editing ? `<form class="card" data-form="stageEdit" data-s="${esc(x.stage.id)}">
+            <label class="field"><span>Nom de l'étape</span><input name="title" value="${esc(x.stage.title)}"></label>
+            <label class="field"><span>Type</span><select name="kind">${Object.entries(STAGE_KIND).map(([k, l]) => `<option value="${k}" ${x.stage.kind === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+            <div class="row"><button type="button" class="btn small" data-a="stageMove" data-s="${esc(x.stage.id)}" data-d="-1" ${i === 0 ? "disabled" : ""}>Monter</button><button type="button" class="btn small" data-a="stageMove" data-s="${esc(x.stage.id)}" data-d="1" ${i === info.stages.length - 1 ? "disabled" : ""}>Descendre</button>
+              <button type="button" class="btn danger small" data-a="stageDelete" data-s="${esc(x.stage.id)}">${st.confirmStage === x.stage.id ? "Confirmer" : "Supprimer"}</button><button class="btn primary small" style="margin-left:auto">OK</button></div>
+            ${x.tasks.length ? `<p class="hint">Supprimer l'étape garde ses tâches, sans étape.</p>` : ""}
+          </form>` : ""}
+        ${items.length ? list(items) : `<p class="hint">${state === "current" ? "Ajoutez la première tâche de cette étape." : "Pas encore de tâche."}</p>`}
+        ${shop.length ? `<ul class="items shop-mini">${shop.map((it) => `<li class="item ${it.bought_at ? "done" : ""}"><button class="check" data-a="buy" data-id="${esc(it.id)}" aria-label="Acheté">${svg("check")}</button><div class="item-body"><span class="item-title">${esc(it.label)}${it.qty ? ` × ${esc(it.qty)}` : ""}</span><span class="meta"><span>Courses</span>${it.store ? `<span>${esc(it.store)}</span>` : ""}</span></div></li>`).join("")}</ul>` : ""}
+        <button class="btn ghost small" style="justify-self:start" data-a="newTask" data-p="${esc(p.id)}" data-s="${esc(x.stage.id)}">+ Tâche</button>
+      </div>
+    </section>`;
+  }).join("");
+  const loose = info.loose.flatMap((t) => t.pairs.map((pr) => itemRow(t, pr.room_id, { showProject: false })));
+  return `${head(`<textarea class="title-input" rows="1" data-f="projTitle" data-p="${esc(p.id)}">${esc(p.title)}</textarea>
+      <p class="sub">${info.stagesDone}/${info.stages.length} étapes franchies · ${info.done}/${info.total} cases${info.minutesLeft ? ` · reste environ ${esc(L.fmtMinutes(info.minutesLeft))}` : ""}</p>`)}
+    ${track(info)}
+    <div class="chips">${Object.entries(PRIO).map(([k, l]) => `<button class="chip" data-a="projPrio" data-p="${esc(p.id)}" data-v="${k}" aria-pressed="${p.priority === k}">${l}</button>`).join("")}</div>
+    <div class="timeline">${stagesHtml}</div>
+    ${loose.length ? `<section class="block"><h3>Sans étape</h3>${list(loose)}</section>` : ""}
+    <form class="add-row" data-form="stageAdd" data-p="${esc(p.id)}"><input name="title" placeholder="Ajouter une étape (ex. Vérifier)" autocomplete="off"><button class="btn">+</button></form>
+    <label class="field"><span>Notes du chantier</span><textarea data-f="projNote" data-p="${esc(p.id)}">${esc(p.note)}</textarea></label>
+    <div class="row end"><button class="btn danger small" data-a="projectDelete" data-p="${esc(p.id)}">${st.confirmDelete ? "Confirmer : supprimer le chantier et ses tâches" : "Supprimer le chantier"}</button></div>`;
+}
+
+function sheetNewProject(st) {
+  const tpl = TEMPLATES.find((x) => x[0] === (st.tpl || "finition"));
+  if (!st.stages) st.stages = tpl[2].map((x) => [...x]);
+  return `${head("<h2>Nouveau chantier</h2>")}
+    <label class="field"><span>Nom</span><input id="np-title" placeholder="Terrasse, cuisine, isolation…" autocomplete="off" value="${esc(st.title || "")}"></label>
+    <div class="field"><span>Modèle d'étapes</span><div class="chips">${TEMPLATES.map(([k, l]) => `<button class="chip" data-a="npTpl" data-v="${k}" aria-pressed="${(st.tpl || "finition") === k}">${l}</button>`).join("")}</div></div>
+    <div class="card"><div class="label">Étapes, dans l'ordre</div>
+      ${st.stages.map(([title, kind], i) => `<div class="row"><span class="stage-dot small">${i + 1}</span><input class="search" style="flex:1" data-f="npStage" data-i="${i}" value="${esc(title)}"><span class="hint">${STAGE_KIND[kind]}</span><button class="x" data-a="npDrop" data-i="${i}" aria-label="Retirer">×</button></div>`).join("")}
+      <button class="btn ghost small" style="justify-self:start" data-a="npAdd">+ Étape</button>
+    </div>
+    <p class="hint">Une tâche d'achat est créée dans l'étape Acheter : ajoutez-y les articles, elle se coche quand tout est acheté.</p>
+    <button class="btn primary wide" data-a="npSave">Créer le chantier</button>`;
+}
+
+function placementOptions(projectId, stageId) {
+  const opts = [`<option value="" ${!projectId ? "selected" : ""}>Petit travail (sans chantier)</option>`];
+  for (const p of S.projects) {
+    const st = S.stages.filter((x) => x.project_id === p.id);
+    opts.push(`<optgroup label="${esc(p.title)}">${st.map((x) => `<option value="${esc(p.id)}|${esc(x.id)}" ${x.id === stageId ? "selected" : ""}>${esc(x.title)}</option>`).join("")}</optgroup>`);
+  }
+  return opts.join("");
+}
+
+async function createProject(title, priority, stageDefs) {
+  const pid = uid();
+  const project = { id: pid, title, priority, note: "", sort: S.projects.length };
+  const stages = stageDefs.map(([t, kind], i) => ({ id: uid(), project_id: pid, title: t, kind: kind || "autre", sort: i }));
+  await store.upsert("projects", project);
+  if (stages.length) await store.upsert("stages", stages);
+  raw.projects = [...(raw.projects || []), project];
+  raw.stages = [...(raw.stages || []), ...stages];
+  rebuild();
+  return pid;
+}
 
 function viewSessions() {
   const today = L.isoDay(new Date());
@@ -265,6 +392,7 @@ function viewSessions() {
   };
   const recap = past.slice(0, 8).map((s) => { const ss = L.sessionStats(S, s); return `<li><span class="txt">${esc(dayLabel(s.day))}${s.label ? " · " + esc(s.label) : ""}</span><span class="when frac">${ss.done}/${ss.total} faits</span></li>`; }).join("");
   return `<main class="view">
+    <button class="btn ghost small" style="justify-self:start;padding-left:0" data-a="tab" data-v="today">‹ Aujourd'hui</button>
     <div class="v-head"><div><h1>Sessions</h1><p class="sub">On se fixe un créneau à deux, l'app le remplit.</p></div></div>
     <button class="btn primary wide" data-a="sessionNew">Préparer une session</button>
     ${upcoming.length ? upcoming.map((s) => card(s, s.day === today)).join("") : `<div class="empty">Aucune session prévue. Choisissez un samedi et une durée : l'app propose quoi faire.</div>`}
@@ -295,14 +423,19 @@ function viewShop() {
 /* ============ fiches ============ */
 let sheetFresh = false;
 function openSheet(s) { sheet = s; sheetFresh = true; renderSheet(true); }
-function closeSheet() { sheet = null; $("#sheets").innerHTML = ""; }
+function closeSheet() {
+  const back = sheet?.back;
+  if (back && (back.type !== "project" || S.projectById.has(back.id))) { openSheet(back); return; }
+  sheet = null;
+  $("#sheets").innerHTML = "";
+}
 
 function renderSheet(force = false) {
   const host = $("#sheets");
   if (!sheet) { host.innerHTML = ""; return; }
   if (!force && host.contains(document.activeElement) && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { sheetDirty = true; return; }
   sheetDirty = false;
-  const fn = { task: sheetTask, room: sheetRoom, dictee: sheetDictee, picker: sheetPicker, session: sheetSession, newTask: sheetNewTask, settings: sheetSettings }[sheet.type];
+  const fn = { project: sheetProject, newProject: sheetNewProject, task: sheetTask, room: sheetRoom, dictee: sheetDictee, picker: sheetPicker, session: sheetSession, newTask: sheetNewTask, settings: sheetSettings }[sheet.type];
   const body = fn ? fn(sheet) : "";
   if (body == null) { closeSheet(); return; }
   const existing = $(".sheet", host);
@@ -341,7 +474,7 @@ function sheetTask({ id }) {
     </li>`;
   }).join("");
 
-  return `${head(`<textarea class="title-input" rows="1" data-f="title" data-t="${esc(id)}">${esc(t.title)}</textarea>`)}
+  return `${head(`${t.project ? `<button class="btn ghost small" style="padding:0 0 4px;border:0;color:var(--accent)" data-a="project" data-p="${esc(t.project.id)}">${esc(t.project.title)}${t.stage ? ` › ${esc(t.stage.title)}` : ""}</button>` : ""}<textarea class="title-input" rows="1" data-f="title" data-t="${esc(id)}">${esc(t.title)}</textarea>`)}
     <div class="chips">
       ${Object.entries(KIND).map(([k, l]) => `<button class="chip" data-a="setField" data-t="${esc(id)}" data-k="kind" data-v="${k}" aria-pressed="${t.kind === k}">${l}</button>`).join("")}
     </div>
@@ -364,7 +497,7 @@ function sheetTask({ id }) {
       ${["", ...S.members].map((m) => `<button class="chip" data-a="setField" data-t="${esc(id)}" data-k="assignee" data-v="${esc(m)}" aria-pressed="${(t.assignee || "") === m}">${m ? esc(m) : "Les deux / personne"}</button>`).join("")}
     </div></div>
     <div class="grid2">
-      <label class="field"><span>Lot</span><input data-f="lot" data-t="${esc(id)}" value="${esc(t.lot)}" list="lots"><datalist id="lots">${[...new Set([...S.tasks.values()].map((x) => x.lot).filter(Boolean))].map((l) => `<option value="${esc(l)}">`).join("")}</datalist></label>
+      <label class="field"><span>Chantier › étape</span><select data-f="placement" data-t="${esc(id)}">${placementOptions(t.project_id, t.stage_id)}</select></label>
       ${futureSessions.length ? `<label class="field"><span>Ajouter à une session</span><select data-f="toSession" data-t="${esc(id)}"><option value="">Choisir…</option>${futureSessions.map((s) => `<option value="${esc(s.id)}">${esc(dayLabel(s.day))}</option>`).join("")}</select></label>` : ""}
     </div>
     <label class="field"><span>Notes</span><textarea data-f="note" data-t="${esc(id)}">${esc(t.note)}</textarea></label>
@@ -386,7 +519,7 @@ function sheetTask({ id }) {
       </form>
     </section>
 
-    <section class="card"><div class="label">À acheter pour ça</div>
+    <section class="card"><div class="label">À acheter pour ça${t.kind === "achat" ? " (la tâche se coche quand tout est acheté)" : ""}</div>
       ${shop.map((s) => `<div class="row"><span style="flex:1;${s.bought_at ? "text-decoration:line-through;color:var(--muted)" : ""}">${esc(s.label)}${s.qty ? ` × ${esc(s.qty)}` : ""}</span><button class="x" data-a="unshop" data-id="${esc(s.id)}">×</button></div>`).join("")}
       <form class="add-row" data-form="shop" data-t="${esc(id)}"><input name="label" placeholder="Ajouter un achat" autocomplete="off"><button class="btn">+</button></form>
     </section>
@@ -435,7 +568,7 @@ function sheetDictee(st) {
   if (st.phase === "result") {
     const r = st.result;
     const roomChips = (i, sel) => S.rooms.map((rm) => `<button type="button" class="chip" data-a="propRoom" data-i="${i}" data-r="${esc(rm.id)}" aria-pressed="${sel.includes(rm.id)}">${esc(rm.name)}</button>`).join("");
-    const n = r.tasks.filter((t) => t.keep).length + r.done.filter((d) => d.keep).length + r.shopping.filter((s) => s.keep).length;
+    const n = r.tasks.filter((t) => t.keep).length + r.done.filter((d) => d.keep).length + r.shopping.filter((s) => s.keep).length + (r.new_projects || []).filter((x) => x.keep).length;
     return `${head("<h2>Ce que j'ai compris</h2>")}
       ${r.summary ? `<p class="hint">${esc(r.summary)}</p>` : ""}
       ${r.questions?.length ? `<div class="card"><div class="label">À trancher</div>${r.questions.map((q) => `<div>${esc(q)}</div>`).join("")}</div>` : ""}
@@ -446,11 +579,13 @@ function sheetDictee(st) {
       ${r.tasks.length ? `<section class="card"><div class="label">Nouvelles tâches</div>${r.tasks.map((t, i) => `<div class="proposal">
         <input type="checkbox" data-f="propKeep" data-kind="tasks" data-i="${i}" ${t.keep ? "checked" : ""}>
         <div class="grow"><input type="text" data-f="propTitle" data-i="${i}" value="${esc(t.title)}">
-          <div class="meta">${t.kind !== "travaux" ? `<span class="tag k-${t.kind}">${KIND[t.kind]}</span>` : ""}${t.priority !== "normale" ? `<span>${PRIO[t.priority]}</span>` : ""}${t.lot ? `<span>${esc(t.lot)}</span>` : ""}${t.minutes ? `<span>${L.fmtMinutes(t.minutes)}</span>` : ""}</div>
+          <div class="meta">${t.kind !== "travaux" ? `<span class="tag k-${t.kind}">${KIND[t.kind]}</span>` : ""}${t.priority !== "normale" ? `<span>${PRIO[t.priority]}</span>` : ""}${t.project_id && S.projectById.get(t.project_id) ? `<span>${esc(S.projectById.get(t.project_id).title)}${t.stage_id && S.stageById.get(t.stage_id) ? " › " + esc(S.stageById.get(t.stage_id).title) : ""}</span>` : ""}${t.minutes ? `<span>${L.fmtMinutes(t.minutes)}</span>` : ""}</div>
           <details><summary class="hint">${esc(t.room_ids.map(roomName).join(", "))}</summary><div class="chips" style="margin-top:6px">${roomChips(i, t.room_ids)}</div></details>
           ${t.note ? `<span class="hint">${esc(t.note)}</span>` : ""}</div></div>`).join("")}</section>` : ""}
+      ${r.new_projects?.length ? `<section class="card"><div class="label">Nouveaux chantiers</div>${r.new_projects.map((np, i) => `<div class="proposal"><input type="checkbox" data-f="propKeep" data-kind="new_projects" data-i="${i}" ${np.keep ? "checked" : ""}><div class="grow"><strong>${esc(np.title)}</strong>
+        ${np.stages.map((st) => `<div class="hint">${esc(st.title)}${st.tasks.length ? " : " + esc(st.tasks.map((x) => x.title).join(", ")) : ""}</div>`).join("")}</div></div>`).join("")}</section>` : ""}
       ${r.shopping.length ? `<section class="card"><div class="label">Courses</div>${r.shopping.map((s, i) => `<div class="proposal"><input type="checkbox" data-f="propKeep" data-kind="shopping" data-i="${i}" ${s.keep ? "checked" : ""}><div class="grow">${esc(s.label)}${s.qty ? ` × ${esc(s.qty)}` : ""}${s.store ? ` <span class="hint">(${esc(s.store)})</span>` : ""}</div></div>`).join("")}</section>` : ""}
-      ${!r.tasks.length && !r.done.length && !r.shopping.length ? `<div class="empty">Rien d'exploitable. Reformule avec des actions concrètes.</div>` : ""}
+      ${!r.tasks.length && !r.done.length && !r.shopping.length && !r.new_projects?.length ? `<div class="empty">Rien d'exploitable. Reformule avec des actions concrètes.</div>` : ""}
       <div class="row"><button class="btn" data-a="dicteeBack">Corriger le texte</button><button class="btn primary" style="flex:1" data-a="dicteeApply" ${n ? "" : "disabled"}>Valider (${n})</button></div>`;
   }
   return `${head("<h2>Dicter</h2>")}
@@ -485,8 +620,17 @@ function sheetSession(st) {
 }
 
 function sheetNewTask(st) {
-  const sel = st.rooms || (st.rooms = [st.room || "maison"]);
-  return `${head("<h2>Nouvelle tâche</h2>")}
+  if (!st.rooms) {
+    // Dans une étape : on reprend les pièces des tâches du chantier.
+    const siblings = st.project ? [...S.tasks.values()].filter((t) => t.project_id === st.project) : [];
+    const rooms = [...new Set(siblings.flatMap((t) => t.pairs.map((p) => p.room_id)))];
+    st.rooms = st.room ? [st.room] : rooms.length === 1 ? rooms : ["maison"];
+  }
+  const sel = st.rooms;
+  const stage = st.stage ? S.stageById.get(st.stage) : null;
+  const defKind = stage?.kind === "acheter" ? "achat" : stage?.kind === "tester" ? "test" : stage?.kind === "decider" ? "decision" : "travaux";
+  if (!st.kind) st.kind = defKind;
+  return `${head(`<h2>Nouvelle tâche</h2>${stage ? `<p class="sub">${esc(S.projectById.get(st.project)?.title || "")} › ${esc(stage.title)}</p>` : ""}`)}
     <label class="field"><span>Quoi</span><input id="nt-title" placeholder="Poser une étagère…" autocomplete="off"></label>
     <div class="field"><span>Pièces</span><div class="chips">${S.rooms.map((r) => `<button class="chip" data-a="ntRoom" data-r="${esc(r.id)}" aria-pressed="${sel.includes(r.id)}">${esc(r.name)}</button>`).join("")}</div></div>
     <div class="chips">${Object.entries(KIND).map(([k, l]) => `<button class="chip" data-a="ntKind" data-v="${k}" aria-pressed="${(st.kind || "travaux") === k}">${l}</button>`).join("")}</div>
@@ -559,7 +703,7 @@ async function toggle(taskId, roomId) {
   const pair = t?.pairs.find((p) => p.room_id === roomId);
   if (!pair) return;
   const done = !L.pairDone(pair);
-  const before = { room: L.roomStats(S).find((r) => r.room.id === roomId)?.pct ?? 0, task: L.taskDone(t) };
+  const before = { room: L.roomStats(S).find((r) => r.room.id === roomId)?.pct ?? 0, task: L.taskDone(t), project: t.project ? L.projectInfo(S, t.project) : null };
   const rawPair = raw.task_rooms.find((p) => p.task_id === taskId && p.room_id === roomId);
   const row = { task_id: taskId, room_id: roomId, done_at: done ? now() : null, done_by: done ? S.me : null };
   Object.assign(rawPair, row);
@@ -576,7 +720,12 @@ async function toggle(taskId, roomId) {
   const tAfter = S.tasks.get(taskId);
   const live = S.sessions.find((s) => s.day === L.isoDay(new Date()));
   const liveStats = live ? L.sessionStats(S, live) : null;
-  if (after && after.pct === 1 && before.room < 1 && roomId !== "maison") celebrate(`${roomName(roomId)} : terminé !`, "Toutes les cases de la pièce sont cochées.");
+  const pAfter = tAfter.project ? L.projectInfo(S, tAfter.project) : null;
+  const stageBefore = before.project?.stages.find((x) => x.stage.id === tAfter.stage_id);
+  const stageAfter = pAfter?.stages.find((x) => x.stage.id === tAfter.stage_id);
+  if (pAfter?.complete && !before.project.complete) celebrate(`${pAfter.project.title} : terminé !`, `${pAfter.stages.length} étapes franchies. Un chantier de moins.`);
+  else if (stageAfter?.complete && !stageBefore?.complete) celebrate(`Étape franchie : ${stageAfter.stage.title}`, pAfter.current ? `${pAfter.project.title}. ${pAfter.current.stage.sort > stageAfter.stage.sort ? "Prochaine étape" : "Reste l'étape"} : ${pAfter.current.stage.title}.` : pAfter.project.title, true);
+  else if (after && after.pct === 1 && before.room < 1 && roomId !== "maison") celebrate(`${roomName(roomId)} : terminé !`, "Toutes les cases de la pièce sont cochées.");
   else if (liveStats && liveStats.total && liveStats.done === liveStats.total && live.items.some((i) => i.task_id === taskId && i.room_id === roomId)) celebrate("Session bouclée !", `${liveStats.total} tâches faites aujourd'hui.`);
   else if (L.taskDone(tAfter) && !before.task && tAfter.pairs.length > 1) toast(`« ${shortTitle(t.title)} » : fait dans toutes les pièces.`);
   else if (after && roomId !== "maison") toast(`Bien joué. ${roomName(roomId)} : ${Math.round(after.pct * 100)} %`);
@@ -592,11 +741,12 @@ async function saveTask(id, patch) {
   render();
   await write(() => store.upsert("tasks", stripTask(t)), "tasks");
 }
-const stripTask = (t) => ({ id: t.id, title: t.title, lot: t.lot || "", kind: t.kind, priority: t.priority, minutes: t.minutes || null, assignee: t.assignee || null, note: t.note || "", depends_on: t.depends_on || [] });
+const stripProject = (p) => ({ id: p.id, title: p.title, priority: p.priority, note: p.note || "", sort: p.sort ?? 100 });
+const stripTask = (t) => ({ id: t.id, title: t.title, project_id: t.project_id || null, stage_id: t.stage_id || null, kind: t.kind, priority: t.priority, minutes: t.minutes || null, assignee: t.assignee || null, note: t.note || "", depends_on: t.depends_on || [] });
 
-async function createTask({ title, rooms, kind = "travaux", priority = "normale", lot = "", minutes = null, note = "", depends_on = [] }) {
+async function createTask({ title, rooms, kind = "travaux", priority = "normale", project_id = null, stage_id = null, minutes = null, note = "", depends_on = [] }) {
   const id = uid();
-  const task = { id, title, lot, kind, priority, minutes: minutes || null, assignee: null, note, depends_on, created_by: S.me };
+  const task = { id, title, project_id, stage_id, kind, priority, minutes: minutes || null, assignee: null, note, depends_on, created_by: S.me };
   const pairs = rooms.map((r) => ({ task_id: id, room_id: r, done_at: null, done_by: null }));
   raw.tasks.push(task);
   raw.task_rooms.push(...pairs);
@@ -610,8 +760,17 @@ async function applyDictee(r) {
   let added = 0, done = 0, bought = 0;
   try {
     for (const t of r.tasks.filter((x) => x.keep)) {
-      await createTask({ title: t.title, rooms: t.room_ids, kind: t.kind, priority: t.priority, lot: t.lot, minutes: t.minutes || null, note: t.note, depends_on: t.depends_on });
+      await createTask({ title: t.title, rooms: t.room_ids, kind: t.kind, priority: t.priority, project_id: t.project_id || null, stage_id: t.project_id ? t.stage_id || null : null, minutes: t.minutes || null, note: t.note, depends_on: t.depends_on });
       log("added", t.title);
+      added++;
+    }
+    for (const np of (r.new_projects || []).filter((x) => x.keep)) {
+      const pid = await createProject(np.title, np.priority || "normale", np.stages.map((st) => [st.title, st.kind]));
+      const stageIds = S.stages.filter((x) => x.project_id === pid).map((x) => x.id);
+      for (const [i, st] of np.stages.entries()) {
+        for (const t of st.tasks) await createTask({ title: t.title, rooms: t.room_ids?.length ? t.room_ids : ["maison"], kind: t.kind || "travaux", priority: np.priority || "normale", project_id: pid, stage_id: stageIds[i], minutes: t.minutes || null });
+      }
+      log("added", `le chantier ${np.title}`);
       added++;
     }
     const rows = [];
@@ -646,12 +805,15 @@ async function saveSession(st) {
 }
 
 /* ============ fête ============ */
-function celebrate(title, text) {
+// light : bandeau qui disparaît seul (étape franchie) ; sinon fenêtre à fermer (chantier, pièce, session).
+function celebrate(title, text, light = false) {
+  document.querySelectorAll(".celebrate").forEach((x) => x.remove());
   const el = document.createElement("div");
-  el.className = "celebrate";
-  el.innerHTML = `<canvas></canvas><div class="box"><strong>${esc(title)}</strong><span>${esc(text)}</span><button class="btn primary">Continuer</button></div>`;
+  el.className = "celebrate" + (light ? " light" : "");
+  el.innerHTML = `<canvas></canvas><div class="box"><strong>${esc(title)}</strong><span>${esc(text)}</span>${light ? "" : `<button class="btn primary">Continuer</button>`}</div>`;
   document.body.appendChild(el);
-  el.addEventListener("click", () => el.remove());
+  if (light) setTimeout(() => el.remove(), 2800);
+  else el.addEventListener("click", () => el.remove());
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const c = $("canvas", el), ctx = c.getContext("2d");
   const dpr = devicePixelRatio || 1;
@@ -699,7 +861,56 @@ async function onClick(e) {
     case "tab": view = d.v; try { sessionStorage.setItem("chantier.view", view); } catch { /* */ } render(); scrollTo(0, 0); break;
     case "close": case "scrim": closeSheet(); break;
     case "toggle": toggle(d.t, d.r); break;
-    case "task": openSheet({ type: "task", id: d.t }); break;
+    case "task": openSheet({ type: "task", id: d.t, back: sheet?.type === "project" ? { type: "project", id: sheet.id } : sheet?.type === "task" ? sheet.back : null }); break;
+    case "project": openSheet({ type: "project", id: d.p }); break;
+    case "projectNew": openSheet({ type: "newProject" }); setTimeout(() => $("#np-title")?.focus(), 250); break;
+    case "npTpl": sheet.title = $("#np-title").value; sheet.tpl = d.v; sheet.stages = null; renderSheet(true); break;
+    case "npAdd": sheet.title = $("#np-title").value; sheet.stages.push(["Nouvelle étape", "autre"]); renderSheet(true); break;
+    case "npDrop": sheet.title = $("#np-title").value; sheet.stages.splice(+d.i, 1); renderSheet(true); break;
+    case "npSave": {
+      const title = $("#np-title").value.trim();
+      if (!title) { $("#np-title").focus(); break; }
+      const defs = sheet.stages.filter(([t]) => t.trim());
+      try {
+        const pid = await createProject(title, "normale", defs);
+        const buyStage = S.stages.find((x) => x.project_id === pid && x.kind === "acheter");
+        if (buyStage) await createTask({ title: "Acheter le nécessaire", rooms: ["maison"], kind: "achat", project_id: pid, stage_id: buyStage.id, minutes: 60 });
+        log("added", `le chantier ${title}`);
+        raw = await store.loadAll(); rebuild(); view = "projects"; render();
+        openSheet({ type: "project", id: pid });
+      } catch (err) { toast(err.message); }
+      break;
+    }
+    case "projPrio": {
+      const pr = S.projectById.get(d.p);
+      await write(() => store.upsert("projects", { ...stripProject(pr), priority: d.v }), "projects");
+      renderSheet(true);
+      break;
+    }
+    case "projectDelete":
+      if (!sheet.confirmDelete) { sheet.confirmDelete = true; renderSheet(true); break; }
+      if (await write(() => store.remove("projects", { id: d.p }), "projects")) { sheet.back = null; raw = await store.loadAll(); rebuild(); closeSheet(); render(); toast("Chantier supprimé"); }
+      break;
+    case "stageEdit": sheet.editStage = sheet.editStage === d.s ? null : d.s; sheet.confirmStage = null; renderSheet(true); break;
+    case "stageMove": {
+      const st = S.stageById.get(d.s);
+      const sib = S.stages.filter((x) => x.project_id === st.project_id);
+      const i = sib.indexOf(st), j = i + +d.d;
+      if (j < 0 || j >= sib.length) break;
+      [sib[i], sib[j]] = [sib[j], sib[i]];
+      await write(() => store.upsert("stages", sib.map((x, k) => ({ id: x.id, project_id: x.project_id, title: x.title, kind: x.kind, sort: k }))), "stages");
+      if (store.mode === "demo") { raw.stages = await store.load("stages"); rebuild(); }
+      renderSheet(true);
+      break;
+    }
+    case "stageDelete": {
+      if (sheet.confirmStage !== d.s) { sheet.confirmStage = d.s; renderSheet(true); break; }
+      const moved = raw.tasks.filter((t) => t.stage_id === d.s).map((t) => ({ ...stripTask(t), stage_id: null }));
+      if (moved.length) await store.upsert("tasks", moved);
+      await write(() => store.remove("stages", { id: d.s }), "stages");
+      raw = await store.loadAll(); rebuild(); sheet.editStage = null; renderSheet(true); render();
+      break;
+    }
     case "room": openSheet({ type: "room", id: d.r }); break;
     case "roomsMode": roomsMode = d.v; render(); break;
     case "dictee": openSheet({ type: "dictee", text: "" }); setTimeout(() => $("#dictee-text")?.focus(), 250); break;
@@ -741,19 +952,28 @@ async function onClick(e) {
     case "buy": {
       const s = S.shopping.find((x) => x.id === d.id);
       const bought = !s.bought_at;
-      await write(() => store.upsert("shopping", { ...s, bought_at: bought ? now() : null }), "shopping");
+      const row = { ...s, bought_at: bought ? now() : null };
+      Object.assign(raw.shopping.find((x) => x.id === s.id), row);
+      rebuild();
+      render();
+      if (!(await write(() => store.upsert("shopping", row), "shopping"))) break;
       if (bought) log("bought", s.label, s.task_id);
+      // Une tâche d'achat se coche toute seule quand tous ses articles sont achetés.
+      const t = s.task_id ? S.tasks.get(s.task_id) : null;
+      if (bought && t?.kind === "achat" && !L.taskDone(t) && S.shopping.filter((x) => x.task_id === t.id).every((x) => x.bought_at)) {
+        for (const pr of t.pairs.filter((x) => !L.pairDone(x))) await toggle(t.id, pr.room_id);
+      }
       break;
     }
     case "unshop": await write(() => store.remove("shopping", { id: d.id }), "shopping"); break;
     case "clearBought": for (const s of S.shopping.filter((x) => x.bought_at)) await store.remove("shopping", { id: s.id }); raw.shopping = await store.load("shopping"); rebuild(); render(); break;
-    case "newTask": openSheet({ type: "newTask", room: d.r || null }); setTimeout(() => $("#nt-title")?.focus(), 250); break;
+    case "newTask": openSheet({ type: "newTask", room: d.r || null, project: d.p || null, stage: d.s || null, back: d.p ? { type: "project", id: d.p } : null }); setTimeout(() => $("#nt-title")?.focus(), 250); break;
     case "ntRoom": { const i = sheet.rooms.indexOf(d.r); if (i >= 0) { if (sheet.rooms.length > 1) sheet.rooms.splice(i, 1); } else sheet.rooms.push(d.r); const v = $("#nt-title").value; renderSheet(true); $("#nt-title").value = v; break; }
     case "ntKind": { sheet.kind = d.v; const v = $("#nt-title").value; renderSheet(true); $("#nt-title").value = v; break; }
     case "ntSave": {
       const title = $("#nt-title").value.trim();
       if (!title) { $("#nt-title").focus(); break; }
-      try { const id = await createTask({ title, rooms: sheet.rooms, kind: sheet.kind || "travaux" }); log("added", title, id); raw = await store.loadAll(); rebuild(); render(); openSheet({ type: "task", id }); }
+      try { const back = sheet.back; const id = await createTask({ title, rooms: sheet.rooms, kind: sheet.kind || "travaux", project_id: sheet.project || null, stage_id: sheet.stage || null, priority: (sheet.project && S.projectById.get(sheet.project)?.priority) || "normale" }); log("added", title, id); raw = await store.loadAll(); rebuild(); render(); openSheet({ type: "task", id, back }); }
       catch (err) { toast(err.message); }
       break;
     }
@@ -773,6 +993,7 @@ async function onClick(e) {
         r.tasks = (r.tasks || []).map((t) => ({ ...t, keep: true }));
         r.done = (r.done || []).map((x) => ({ ...x, keep: true }));
         r.shopping = (r.shopping || []).map((x) => ({ ...x, keep: true }));
+        r.new_projects = (r.new_projects || []).map((x) => ({ ...x, keep: true }));
         if (sheet?.type === "dictee") { sheet.result = r; sheet.phase = "result"; renderSheet(true); }
       } catch (err) {
         if (sheet?.type === "dictee") { sheet.phase = "input"; sheet.error = err.message; renderSheet(true); }
@@ -831,7 +1052,10 @@ async function onChange(e) {
   }
   switch (f) {
     case "title": if (el.value.trim()) saveTask(id, { title: el.value.trim() }); break;
-    case "lot": saveTask(id, { lot: el.value.trim() }); break;
+    case "placement": { const [pid, sid] = el.value ? el.value.split("|") : [null, null]; saveTask(id, { project_id: pid, stage_id: sid }); break; }
+    case "projTitle": { const pr = S.projectById.get(el.dataset.p); if (el.value.trim()) await write(() => store.upsert("projects", { ...stripProject(pr), title: el.value.trim() }), "projects"); break; }
+    case "projNote": { const pr = S.projectById.get(el.dataset.p); await write(() => store.upsert("projects", { ...stripProject(pr), note: el.value.trim() }), "projects"); break; }
+    case "npStage": sheet.stages[+el.dataset.i][0] = el.value; break;
     case "note": saveTask(id, { note: el.value.trim() }); break;
     case "priority": saveTask(id, { priority: el.value }); break;
     case "minutes": saveTask(id, { minutes: el.value ? +el.value : null }); break;
@@ -903,6 +1127,16 @@ async function onSubmit(e) {
         toast(row.kind === "essai" ? "Essai noté" : "Ajouté au carnet");
       }
     } catch (err) { toast(err.message); if (btn) btn.disabled = false; }
+  } else if (kind === "stageAdd") {
+    const title = String(fd.get("title") || "").trim();
+    if (!title) return;
+    const pid = form.dataset.p;
+    const n = S.stages.filter((x) => x.project_id === pid).length;
+    await write(() => store.upsert("stages", { id: uid(), project_id: pid, title, kind: "autre", sort: n }), "stages");
+  } else if (kind === "stageEdit") {
+    const st = S.stageById.get(form.dataset.s);
+    await write(() => store.upsert("stages", { id: st.id, project_id: st.project_id, title: String(fd.get("title") || st.title).trim() || st.title, kind: String(fd.get("kind") || st.kind), sort: st.sort }), "stages");
+    sheet.editStage = null; renderSheet(true);
   } else if (kind === "renameRoom") {
     const name = String(fd.get("name") || "").trim();
     const r = S.roomById.get(form.dataset.r);

@@ -1,7 +1,7 @@
 // Mode partagé : Supabase (base, connexion par code e-mail, photos, temps réel).
 const SDK = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm";
-const TABLES = ["rooms", "tasks", "task_rooms", "options", "entries", "shopping", "sessions", "activity"];
-const ORDER = { rooms: "sort", activity: "at", entries: "created_at", sessions: "day", shopping: "created_at" };
+const TABLES = ["rooms", "projects", "stages", "tasks", "task_rooms", "options", "entries", "shopping", "sessions", "activity"];
+const ORDER = { rooms: "sort", projects: "sort", stages: "sort", activity: "at", entries: "created_at", sessions: "day", shopping: "created_at" };
 
 export async function createSupabaseStore(cfg) {
   const { createClient } = await import(SDK);
@@ -52,7 +52,7 @@ export async function createSupabaseStore(cfg) {
     async signOut() { await sb.auth.signOut(); location.reload(); },
     async load(table) {
       let q = sb.from(table).select("*");
-      if (ORDER[table]) q = q.order(ORDER[table], { ascending: table === "rooms" });
+      if (ORDER[table]) q = q.order(ORDER[table], { ascending: ["rooms", "projects", "stages"].includes(table) });
       if (table === "activity") q = q.limit(200);
       const { data, error } = await q;
       fail(error);

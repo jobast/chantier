@@ -23,7 +23,7 @@ Compter 30 à 45 minutes, une seule fois.
      ('email-de-jacqueline@exemple.fr', 'Jacqueline');
    ```
    Les noms doivent rester `Joan` et `Jacqueline` : l'app s'en sert pour « qui s'en occupe ».
-4. Exécuter `supabase/seed.sql` : les pièces, les 56 tâches, les options de décision et les premières courses.
+4. Exécuter `supabase/seed.sql` : les pièces, 21 chantiers découpés en étapes (90 tâches), les options de décision et les premières courses.
 
 ### Connexion par code (important sur iPhone)
 

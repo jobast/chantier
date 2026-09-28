@@ -35,9 +35,11 @@ Deno.serve(async (req) => {
   if (!text) return json({ error: "empty" }, 400);
   if (text.length > 8000) return json({ error: "too_long" }, 400);
 
-  const [rooms, tasks, taskRooms] = await Promise.all([
+  const [rooms, projects, stages, tasks, taskRooms] = await Promise.all([
     supabase.from("rooms").select("id, name").order("sort"),
-    supabase.from("tasks").select("id, title, lot"),
+    supabase.from("projects").select("id, title").order("sort"),
+    supabase.from("stages").select("id, project_id, title, kind").order("sort"),
+    supabase.from("tasks").select("id, title, project_id, stage_id"),
     supabase.from("task_rooms").select("task_id, room_id, done_at"),
   ]);
   const byTask = new Map<string, { rooms: string[]; done_rooms: string[] }>();
@@ -51,8 +53,15 @@ Deno.serve(async (req) => {
     me: me.name,
     members: (members ?? []).map((m) => m.name),
     rooms: rooms.data ?? [],
-    lots: [...new Set((tasks.data ?? []).map((t) => t.lot).filter(Boolean))],
-    tasks: (tasks.data ?? []).map((t) => ({ id: t.id, title: t.title, ...(byTask.get(t.id) ?? { rooms: [], done_rooms: [] }) })),
+    projects: (projects.data ?? []).map((p) => ({
+      id: p.id,
+      title: p.title,
+      stages: (stages.data ?? []).filter((s) => s.project_id === p.id).map((s) => ({ id: s.id, title: s.title, kind: s.kind })),
+    })),
+    tasks: (tasks.data ?? []).map((t) => ({
+      id: t.id, title: t.title, project_id: t.project_id, stage_id: t.stage_id,
+      ...(byTask.get(t.id) ?? { rooms: [], done_rooms: [] }),
+    })),
   };
 
   try {

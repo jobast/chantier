@@ -1,6 +1,6 @@
 // Mode démo : tout reste dans ce navigateur. Sert à essayer l'app avant de brancher Supabase.
-const KEY = "chantier.demo.v3";
-const TABLES = ["rooms", "tasks", "task_rooms", "options", "entries", "shopping", "sessions", "activity"];
+const KEY = "chantier.demo.v4";
+const TABLES = ["rooms", "projects", "stages", "tasks", "task_rooms", "options", "entries", "shopping", "sessions", "activity"];
 const keyOf = (table, row) => (table === "task_rooms" ? row.task_id + "|" + row.room_id : row.id);
 
 export async function createLocalStore() {
@@ -50,6 +50,16 @@ export async function createLocalStore() {
     async remove(table, match) {
       const list = db[table] || [];
       db[table] = list.filter((x) => !Object.entries(match).every(([k, v]) => x[k] === v));
+      if (table === "projects") {
+        const gone = new Set(db.tasks.filter((t) => t.project_id === match.id).map((t) => t.id));
+        db.stages = db.stages.filter((x) => x.project_id !== match.id);
+        db.tasks = db.tasks.filter((t) => !gone.has(t.id));
+        db.task_rooms = db.task_rooms.filter((p) => !gone.has(p.task_id));
+        db.options = db.options.filter((o) => !gone.has(o.task_id));
+        db.entries = db.entries.filter((e) => !gone.has(e.task_id));
+        for (const s of db.shopping) if (gone.has(s.task_id)) s.task_id = null;
+      }
+      if (table === "stages") for (const t of db.tasks) if (t.stage_id === match.id) t.stage_id = null;
       if (table === "tasks") {
         const id = match.id;
         db.task_rooms = db.task_rooms.filter((p) => p.task_id !== id);
@@ -94,12 +104,12 @@ function naiveDictee(text, S) {
     tasks.push({
       title: p.charAt(0).toUpperCase() + p.slice(1),
       room_ids: rooms.length ? rooms : ["maison"],
-      lot: "", kind: /\b(choisir|decider|ou bien|est-ce qu)/.test(n) ? "decision" : /\b(tester|essayer|essai)/.test(n) ? "test" : "travaux",
+      project_id: "", stage_id: "", kind: /\b(choisir|decider|ou bien|est-ce qu)/.test(n) ? "decision" : /\b(tester|essayer|essai)/.test(n) ? "test" : "travaux",
       priority: /\burgent/.test(n) ? "urgente" : "normale", minutes: 0, note: "", depends_on: [],
     });
   }
   return {
     summary: "Mode démo : découpage simple, une tâche par phrase. Avec Supabase et la clé Claude, l'analyse comprend vraiment la dictée.",
-    tasks, done: [], shopping, questions: [],
+    tasks, done: [], shopping, questions: [], new_projects: [],
   };
 }

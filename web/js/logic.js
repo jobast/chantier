@@ -10,6 +10,24 @@ export function buildState(raw, me = null) {
     const t = tasks.get(p.task_id);
     if (t) t.pairs.push({ ...p });
   }
+  const projects = [...(raw.projects || [])].sort((a, b) => (a.sort ?? 100) - (b.sort ?? 100));
+  const stages = [...(raw.stages || [])].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
+  const projectById = new Map(projects.map((p) => [p.id, p]));
+  const stageById = new Map(stages.map((s) => [s.id, s]));
+  for (const t of tasks.values()) {
+    t.project = projectById.get(t.project_id) || null;
+    t.stage = t.project ? stageById.get(t.stage_id) || null : null;
+  }
+  // Dépendances effectives : celles déclarées + toutes les tâches des étapes précédentes du même chantier.
+  for (const t of tasks.values()) {
+    const deps = new Set(t.depends_on);
+    if (t.stage) {
+      for (const x of tasks.values()) {
+        if (x.project_id === t.project_id && x.stage && x.stage.sort < t.stage.sort) deps.add(x.id);
+      }
+    }
+    t.deps = [...deps];
+  }
   const rooms = [...(raw.rooms || [])].sort((a, b) => (a.sort ?? 100) - (b.sort ?? 100) || a.name.localeCompare(b.name, "fr"));
   const roomOrder = new Map(rooms.map((r, i) => [r.id, i]));
   for (const t of tasks.values()) t.pairs.sort((a, b) => (roomOrder.get(a.room_id) ?? 99) - (roomOrder.get(b.room_id) ?? 99));
@@ -17,6 +35,10 @@ export function buildState(raw, me = null) {
     me,
     members: raw.members || [],
     rooms,
+    projects,
+    stages,
+    projectById,
+    stageById,
     roomById: new Map(rooms.map((r) => [r.id, r])),
     tasks,
     options: raw.options || [],
@@ -36,7 +58,7 @@ export const minutesOf = (t) => (t.minutes > 0 ? t.minutes : DEFAULT_MINUTES);
 // ou, si elle ne concerne pas R, tant qu'elle n'est pas entièrement faite.
 export function blockers(S, task, roomId) {
   const out = [];
-  for (const id of task.depends_on) {
+  for (const id of task.deps || task.depends_on) {
     const d = S.tasks.get(id);
     if (!d) continue;
     const same = d.pairs.find((p) => p.room_id === roomId);
@@ -59,7 +81,7 @@ export function openItems(S) {
 
 export function unlocks(S, task) {
   let n = 0;
-  for (const t of S.tasks.values()) if (t.depends_on.includes(task.id) && !taskDone(t)) n += t.pairs.filter((p) => !pairDone(p)).length;
+  for (const t of S.tasks.values()) if ((t.deps || t.depends_on).includes(task.id) && !taskDone(t)) n += t.pairs.filter((p) => !pairDone(p)).length;
   return n;
 }
 
@@ -70,7 +92,52 @@ function score(S, item, who) {
   if (taskStarted(t)) s += 8;
   s += Math.min(unlocks(S, t), 10) * 3;
   if (t.kind === "decision") s += 4;
+  if (t.project) {
+    s += (PRIO_WEIGHT[t.project.priority] ?? 10) / 4;
+    const info = projectInfo(S, t.project);
+    if (info.started) s += 10; // finir ce qui est commencé
+  }
   return s;
+}
+
+// Avancement d'un chantier, étape par étape.
+export function projectInfo(S, project) {
+  const tasks = [...S.tasks.values()].filter((t) => t.project_id === project.id);
+  const stages = S.stages.filter((s) => s.project_id === project.id).map((stage) => {
+    const ts = tasks.filter((t) => t.stage_id === stage.id);
+    let total = 0, done = 0, minutesLeft = 0;
+    for (const t of ts) for (const p of t.pairs) { total++; if (pairDone(p)) done++; else minutesLeft += minutesOf(t); }
+    return { stage, tasks: ts, total, done, minutesLeft, complete: total > 0 && done === total, empty: total === 0 };
+  });
+  const loose = tasks.filter((t) => !t.stage);
+  let total = 0, done = 0, minutesLeft = 0;
+  for (const t of tasks) for (const p of t.pairs) { total++; if (pairDone(p)) done++; else minutesLeft += minutesOf(t); }
+  const current = stages.find((x) => !x.complete && !x.empty) || null;
+  return {
+    project, stages, loose, total, done, minutesLeft,
+    pct: total ? done / total : 0,
+    complete: total > 0 && done === total,
+    started: done > 0 && done < total,
+    current,
+    stagesDone: stages.filter((x) => x.complete).length,
+  };
+}
+
+// Prochaines actions possibles d'un chantier (étape courante, débloquées).
+export function nextActions(S, project, n = 3) {
+  const info = projectInfo(S, project);
+  if (!info.current) return [];
+  const out = [];
+  for (const t of info.current.tasks) for (const p of t.pairs) {
+    if (!pairDone(p) && !blockers(S, t, p.room_id).length) out.push({ task: t, room_id: p.room_id });
+  }
+  return out.slice(0, n);
+}
+
+export function projectsByState(S) {
+  const infos = S.projects.map((p) => projectInfo(S, p));
+  const rank = (i) => (i.complete ? 3 : i.started ? 0 : 1);
+  return infos.sort((a, b) => rank(a) - rank(b) || (PRIO_WEIGHT[b.project.priority] ?? 0) - (PRIO_WEIGHT[a.project.priority] ?? 0) || (a.project.sort ?? 0) - (b.project.sort ?? 0));
 }
 
 // Choisit de quoi remplir un créneau : prioritaire, débloqué, et regroupé par pièce

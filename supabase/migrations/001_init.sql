@@ -11,11 +11,31 @@ create table rooms (
   sort int  not null default 100
 );
 
+-- Un chantier est un processus : une suite ordonnée d'étapes (décider, acheter, tester, appliquer…).
+create table projects (
+  id         text primary key default gen_random_uuid()::text,
+  title      text not null,
+  priority   text not null default 'normale' check (priority in ('urgente', 'haute', 'normale', 'basse')),
+  note       text not null default '',
+  sort       int  not null default 100,
+  created_at timestamptz not null default now()
+);
+
+-- Une étape est franchie quand toutes ses tâches sont faites ; la suivante attend jusque-là.
+create table stages (
+  id         text primary key default gen_random_uuid()::text,
+  project_id text not null references projects(id) on delete cascade,
+  title      text not null,
+  kind       text not null default 'autre' check (kind in ('decider', 'acheter', 'tester', 'preparer', 'appliquer', 'finir', 'autre')),
+  sort       int  not null default 0
+);
+
 create table tasks (
   id         text primary key default gen_random_uuid()::text,
   title      text not null,
-  lot        text not null default '',
-  kind       text not null default 'travaux' check (kind in ('travaux', 'decision', 'test')),
+  project_id text references projects(id) on delete cascade,   -- null = petit travail isolé
+  stage_id   text references stages(id) on delete set null,
+  kind       text not null default 'travaux' check (kind in ('travaux', 'decision', 'test', 'achat')),
   priority   text not null default 'normale' check (priority in ('urgente', 'haute', 'normale', 'basse')),
   minutes    int,                         -- estimation par pièce
   assignee   text,                        -- members.name, ou null
@@ -98,7 +118,7 @@ $$;
 do $$
 declare t text;
 begin
-  foreach t in array array['rooms','tasks','task_rooms','options','entries','shopping','sessions','activity'] loop
+  foreach t in array array['rooms','projects','stages','tasks','task_rooms','options','entries','shopping','sessions','activity'] loop
     execute format('alter table %I enable row level security', t);
     execute format('create policy "membres" on %I for all to authenticated using (is_member()) with check (is_member())', t);
     execute format('alter publication supabase_realtime add table %I', t);
