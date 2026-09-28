@@ -1,0 +1,1461 @@
+{
+ "version": 1,
+ "people": [
+  "Joan",
+  "Jacqueline"
+ ],
+ "rooms": [
+  {
+   "id": "maison",
+   "name": "Toute la maison / transversal"
+  },
+  {
+   "id": "ch-liam",
+   "name": "Chambre Liam"
+  },
+  {
+   "id": "ch-maceo",
+   "name": "Chambre Maceo"
+  },
+  {
+   "id": "ch-solal",
+   "name": "Chambre Solal"
+  },
+  {
+   "id": "ch-parents",
+   "name": "Notre chambre"
+  },
+  {
+   "id": "ch-malik",
+   "name": "Chambre Malik"
+  },
+  {
+   "id": "bureau",
+   "name": "Bureau"
+  },
+  {
+   "id": "sdb-parents",
+   "name": "Notre salle de bain"
+  },
+  {
+   "id": "sdb-enfants",
+   "name": "SDB enfants + Malik"
+  },
+  {
+   "id": "salon",
+   "name": "Salon / cuisine"
+  },
+  {
+   "id": "couloirs",
+   "name": "Couloirs"
+  },
+  {
+   "id": "aile",
+   "name": "Autre aile"
+  },
+  {
+   "id": "toit",
+   "name": "Toit"
+  }
+ ],
+ "tasks": [
+  {
+   "id": "t001",
+   "room": "maison",
+   "title": "R&D enduit chaux : recettes (chaux, sable, dosages)",
+   "lot": "enduit",
+   "kind": "decision",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Une seule R&D pour toute la maison, pas une par pièce."
+  },
+  {
+   "id": "t002",
+   "room": "maison",
+   "title": "Acheter chaux, sable, outillage pour tests",
+   "lot": "enduit",
+   "kind": "achat",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t001"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t003",
+   "room": "maison",
+   "title": "Tester préparations sur panneaux / pan de mur",
+   "lot": "enduit",
+   "kind": "test",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t002"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t004",
+   "room": "maison",
+   "title": "Décider éclairage : spots encastrés vs abat-jour",
+   "lot": "electricite",
+   "kind": "decision",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "A trancher avant les saignées et l'enduit."
+  },
+  {
+   "id": "t005",
+   "room": "maison",
+   "title": "Saigner les murs + passer les fils (si spots/appliques)",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": "Avant enduit, sinon on casse l'enduit neuf."
+  },
+  {
+   "id": "t006",
+   "room": "maison",
+   "title": "Traitement termites : produit + méthode",
+   "lot": "termites",
+   "kind": "decision",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Avant peinture/vernis des boiseries."
+  },
+  {
+   "id": "t007",
+   "room": "maison",
+   "title": "Trouver la technique pour installer des ventilateurs",
+   "lot": "ventilation",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t008",
+   "room": "maison",
+   "title": "Choisir et acheter le turquoise (fenêtres/portes)",
+   "lot": "menuiseries",
+   "kind": "achat",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t009",
+   "room": "maison",
+   "title": "Acheter balais de bas de porte (anti-serpents), toutes chambres",
+   "lot": "securite",
+   "kind": "achat",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t010",
+   "room": "maison",
+   "title": "Choisir rideaux, toutes chambres",
+   "lot": "textile",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t011",
+   "room": "maison",
+   "title": "URGENT : isoler le bruit du solaire (fermer le petit réduit)",
+   "lot": "solaire",
+   "kind": "travaux",
+   "priority": "urgente",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t012",
+   "room": "maison",
+   "title": "Fermer les toilettes visiteurs (monter un mur)",
+   "lot": "solaire",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t013",
+   "room": "maison",
+   "title": "Régler la porte d'entrée de la maison",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t014",
+   "room": "maison",
+   "title": "Penderie : concevoir/faire le(s) meuble(s)",
+   "lot": "mobilier",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t015",
+   "room": "maison",
+   "title": "Meubles sous l'escalier du salon",
+   "lot": "mobilier",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t016",
+   "room": "ch-liam",
+   "title": "Traitement termites",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t017",
+   "room": "ch-liam",
+   "title": "Peindre plafond",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t018",
+   "room": "ch-liam",
+   "title": "Peindre boiseries",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t016"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t019",
+   "room": "ch-liam",
+   "title": "Appliquer enduit chaux",
+   "lot": "enduit",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t003",
+    "t005",
+    "t017"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t020",
+   "room": "ch-liam",
+   "title": "Peindre fenêtres en turquoise",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t016"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t021",
+   "room": "ch-liam",
+   "title": "Vernir la porte",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t016"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t022",
+   "room": "ch-liam",
+   "title": "Lumières (installer selon décision)",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t023",
+   "room": "ch-liam",
+   "title": "Tester peinture sur plinthes",
+   "lot": "peinture",
+   "kind": "test",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t024",
+   "room": "ch-liam",
+   "title": "Balai sous la porte",
+   "lot": "securite",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t025",
+   "room": "ch-liam",
+   "title": "Rideaux",
+   "lot": "textile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t026",
+   "room": "ch-maceo",
+   "title": "Traitement termites",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t027",
+   "room": "ch-maceo",
+   "title": "Peindre plafond",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t028",
+   "room": "ch-maceo",
+   "title": "Peindre boiseries",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t026"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t029",
+   "room": "ch-maceo",
+   "title": "Appliquer enduit chaux",
+   "lot": "enduit",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t003",
+    "t005",
+    "t027"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t030",
+   "room": "ch-maceo",
+   "title": "Peindre fenêtres en turquoise",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t026"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t031",
+   "room": "ch-maceo",
+   "title": "Vernir la porte",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t026"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t032",
+   "room": "ch-maceo",
+   "title": "Lumières (installer selon décision)",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t033",
+   "room": "ch-maceo",
+   "title": "Tester peinture sur plinthes",
+   "lot": "peinture",
+   "kind": "test",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t034",
+   "room": "ch-maceo",
+   "title": "Balai sous la porte",
+   "lot": "securite",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t035",
+   "room": "ch-maceo",
+   "title": "Rideaux",
+   "lot": "textile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t036",
+   "room": "ch-solal",
+   "title": "Traitement termites",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t037",
+   "room": "ch-solal",
+   "title": "Peindre plafond",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t038",
+   "room": "ch-solal",
+   "title": "Peindre boiseries",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t036"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t039",
+   "room": "ch-solal",
+   "title": "Appliquer enduit chaux",
+   "lot": "enduit",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t003",
+    "t005",
+    "t037"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t040",
+   "room": "ch-solal",
+   "title": "Peindre fenêtres en turquoise",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t036"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t041",
+   "room": "ch-solal",
+   "title": "Vernir la porte",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t036"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t042",
+   "room": "ch-solal",
+   "title": "Lumières (installer selon décision)",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t043",
+   "room": "ch-solal",
+   "title": "Tester peinture sur plinthes",
+   "lot": "peinture",
+   "kind": "test",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t044",
+   "room": "ch-solal",
+   "title": "Balai sous la porte",
+   "lot": "securite",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t045",
+   "room": "ch-solal",
+   "title": "Rideaux",
+   "lot": "textile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t046",
+   "room": "ch-parents",
+   "title": "Condamner la porte vers le bureau",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t047",
+   "room": "ch-parents",
+   "title": "Réparer la porte de la chambre qui ne ferme pas",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Tu as dit 'porte d'entrée' : j'ai supposé la porte de la chambre. A confirmer."
+  },
+  {
+   "id": "t048",
+   "room": "ch-parents",
+   "title": "Fermer l'ouverture au-dessus de la porte",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t049",
+   "room": "ch-parents",
+   "title": "Boiseries : les exploiter (suspendre) ou les peindre pour les fondre ?",
+   "lot": "boiseries",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t050",
+   "room": "ch-parents",
+   "title": "Boiseries : réaliser l'option choisie",
+   "lot": "boiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t049",
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t051",
+   "room": "ch-parents",
+   "title": "Lumières",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t052",
+   "room": "ch-parents",
+   "title": "Peindre les portes-fenêtres",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t053",
+   "room": "ch-parents",
+   "title": "Balai sous la porte",
+   "lot": "securite",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t054",
+   "room": "ch-parents",
+   "title": "Rideaux",
+   "lot": "textile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t055",
+   "room": "ch-malik",
+   "title": "Fenêtres",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t056",
+   "room": "ch-malik",
+   "title": "Peindre",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t057",
+   "room": "ch-malik",
+   "title": "Installer un ventilateur",
+   "lot": "ventilation",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t007"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t058",
+   "room": "ch-malik",
+   "title": "Finir de peindre la porte en turquoise",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t059",
+   "room": "ch-malik",
+   "title": "Balai sous la porte",
+   "lot": "securite",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t060",
+   "room": "ch-malik",
+   "title": "Rideaux",
+   "lot": "textile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t061",
+   "room": "bureau",
+   "title": "Ranger et vider le bureau",
+   "lot": "rangement",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Débloque tout le reste de la pièce."
+  },
+  {
+   "id": "t062",
+   "room": "bureau",
+   "title": "Traitement termites",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t063",
+   "room": "bureau",
+   "title": "Peindre plafond",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t064",
+   "room": "bureau",
+   "title": "Appliquer enduit chaux",
+   "lot": "enduit",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t003",
+    "t005"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t065",
+   "room": "bureau",
+   "title": "Combler les trous en haut des murs (poutres) : planches ou autre",
+   "lot": "boiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t066",
+   "room": "bureau",
+   "title": "Peindre les boiseries",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t067",
+   "room": "bureau",
+   "title": "Peindre porte et porte-fenêtre",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t068",
+   "room": "bureau",
+   "title": "Condamner la porte vers notre chambre",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t046"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": "Même porte que côté chambre : une seule opération."
+  },
+  {
+   "id": "t069",
+   "room": "bureau",
+   "title": "Réparer la fenêtre cassée",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t070",
+   "room": "bureau",
+   "title": "Lumières",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t071",
+   "room": "bureau",
+   "title": "Balai sous la porte",
+   "lot": "securite",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t072",
+   "room": "bureau",
+   "title": "Rideaux",
+   "lot": "textile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t073",
+   "room": "sdb-parents",
+   "title": "Peindre",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t074",
+   "room": "sdb-parents",
+   "title": "Jolies lumières",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t075",
+   "room": "sdb-parents",
+   "title": "Carrelage ou autre finition : décider",
+   "lot": "finitions",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t076",
+   "room": "sdb-parents",
+   "title": "Traitement termites",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t077",
+   "room": "sdb-parents",
+   "title": "Installer un ventilateur ?",
+   "lot": "ventilation",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t007"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t078",
+   "room": "sdb-enfants",
+   "title": "Peindre",
+   "lot": "peinture",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t079",
+   "room": "sdb-enfants",
+   "title": "Jolies lumières",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t080",
+   "room": "sdb-enfants",
+   "title": "Carrelage ou autre finition : décider",
+   "lot": "finitions",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t081",
+   "room": "sdb-enfants",
+   "title": "Traitement termites",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t082",
+   "room": "sdb-enfants",
+   "title": "Installer un ventilateur ?",
+   "lot": "ventilation",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t007"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t083",
+   "room": "sdb-parents",
+   "title": "Poser une vitre sur la fenêtre",
+   "lot": "menuiseries",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t084",
+   "room": "sdb-enfants",
+   "title": "Évacuation d'eau : stagne et déborde",
+   "lot": "plomberie",
+   "kind": "travaux",
+   "priority": "urgente",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Dégâts des eaux possibles : à traiter avant toute finition."
+  },
+  {
+   "id": "t085",
+   "room": "salon",
+   "title": "Préparer la chaux (éteindre, laisser reposer)",
+   "lot": "enduit",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Chaux vive = caustique : lunettes, gants."
+  },
+  {
+   "id": "t086",
+   "room": "salon",
+   "title": "Reprendre la chaux aux endroits cassés",
+   "lot": "enduit",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t085"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t087",
+   "room": "salon",
+   "title": "Couvrir les tranches de dalles en ciment apparent",
+   "lot": "finitions",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t088",
+   "room": "salon",
+   "title": "Poteaux : peindre ou habiller ?",
+   "lot": "finitions",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t089",
+   "room": "salon",
+   "title": "Poteaux : réaliser",
+   "lot": "finitions",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t088"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t090",
+   "room": "salon",
+   "title": "Plancher au-dessus de la buanderie",
+   "lot": "structure",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t091",
+   "room": "salon",
+   "title": "Séparateurs dans le tiroir à couverts",
+   "lot": "mobilier",
+   "kind": "achat",
+   "priority": "basse",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t092",
+   "room": "salon",
+   "title": "Appliques au-dessus du bar",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t093",
+   "room": "salon",
+   "title": "Replacer toutes les lumières",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t094",
+   "room": "salon",
+   "title": "Termites sur la fenêtre",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t095",
+   "room": "toit",
+   "title": "Traiter le haut du toit (termites)",
+   "lot": "termites",
+   "kind": "travaux",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [
+    "t006"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t096",
+   "room": "couloirs",
+   "title": "Appliques",
+   "lot": "electricite",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t004"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t097",
+   "room": "aile",
+   "title": "Décider : escalier vers l'aile ou appartement indépendant",
+   "lot": "aile",
+   "kind": "decision",
+   "priority": "haute",
+   "status": "todo",
+   "dependsOn": [],
+   "assignee": null,
+   "due": null,
+   "note": "Préférence : appartement. Mais 'escalier depuis le salon' contredit l'indépendance : à trancher."
+  },
+  {
+   "id": "t098",
+   "room": "aile",
+   "title": "Monter le mur de séparation",
+   "lot": "aile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t097"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t099",
+   "room": "aile",
+   "title": "Ouvrir derrière : terrasse + porte-fenêtre",
+   "lot": "aile",
+   "kind": "travaux",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t097"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  },
+  {
+   "id": "t100",
+   "room": "aile",
+   "title": "Escalier : extérieur ou depuis le salon",
+   "lot": "aile",
+   "kind": "decision",
+   "priority": "normale",
+   "status": "todo",
+   "dependsOn": [
+    "t097"
+   ],
+   "assignee": null,
+   "due": null,
+   "note": ""
+  }
+ ]
+}
