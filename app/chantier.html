@@ -1,0 +1,403 @@
+<title>Chantier de la maison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout : une colonne de téléphone, en-tête collant avec l'avancement, onglets, liste de tâches, fiche en bas d'écran */
+:root{
+  --bg:#eaeee9;          /* mur passé à la chaux */
+  --surface:#fbfcfa;
+  --line:#d3dad4;
+  --fg:#1c2a2b;
+  --muted:#5d6d6c;
+  --accent:#0d8584;      /* le turquoise des fenêtres */
+  --accent-ink:#ffffff;
+  --accent-soft:#d3ecea;
+  --urgent:#c23b12;
+  --high:#b87400;
+  --done:#8a9895;
+  --f-display:"Bricolage Grotesque",ui-rounded,"Avenir Next",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible",-apple-system,"Segoe UI",system-ui,sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111a1b;--surface:#182426;--line:#2a393b;--fg:#e2ebe9;--muted:#93a4a2;
+  --accent:#3cbfbd;--accent-ink:#06201f;--accent-soft:#173a3a;--urgent:#ff7a4d;--high:#e6a93a;--done:#6b7b79;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111a1b;--surface:#182426;--line:#2a393b;--fg:#e2ebe9;--muted:#93a4a2;
+  --accent:#3cbfbd;--accent-ink:#06201f;--accent-soft:#173a3a;--urgent:#ff7a4d;--high:#e6a93a;--done:#6b7b79;color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.4 var(--f-body);-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding-inline:16px;padding-block:0 110px}
+
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 8px;display:grid;gap:10px}
+.head-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+h1{font:800 1.6rem/1 var(--f-display);letter-spacing:-.02em;margin:0;text-wrap:balance}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem;white-space:nowrap}
+.count b{color:var(--fg)}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width .3s}
+
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:3px}
+.tabs button{border:0;background:none;padding:8px 2px;border-radius:7px;font:700 .85rem var(--f-body);color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chip{flex:none;border:1px solid var(--line);background:none;border-radius:999px;padding:5px 11px;font-size:.85rem;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--fg);font-weight:700}
+
+main{display:grid;gap:18px;padding-top:8px}
+.hint{color:var(--muted);font-size:.9rem;margin:0}
+.state{padding:40px 8px;text-align:center;color:var(--muted);display:grid;gap:6px}
+.state strong{font:700 1.15rem var(--f-display);color:var(--fg)}
+
+section.group{display:grid;gap:6px}
+.g-head{display:flex;align-items:center;gap:10px;background:none;border:0;padding:4px 0;width:100%;text-align:left}
+.g-head h2{font:700 1.1rem/1.2 var(--f-display);margin:0;flex:1;min-width:0}
+.g-head .mini{width:56px;height:4px;border-radius:2px;background:var(--line);overflow:hidden;flex:none}
+.g-head .mini i{display:block;height:100%;background:var(--accent)}
+.g-head .n{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;flex:none;min-width:3.2em;text-align:right}
+.g-head .caret{flex:none;color:var(--muted);transition:transform .2s;font-size:.8rem}
+section.group.closed .caret{transform:rotate(-90deg)}
+section.group.closed ul{display:none}
+
+ul.tasks{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+li.task{display:flex;align-items:flex-start;gap:10px;padding:11px 12px 11px 10px;border-top:1px solid var(--line);position:relative}
+li.task:first-child{border-top:0}
+li.task.p-urgente::before,li.task.p-haute::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;border-radius:0 2px 2px 0}
+li.task.p-urgente::before{background:var(--urgent)}
+li.task.p-haute::before{background:var(--high)}
+.check{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);background:none;display:grid;place-items:center;margin-top:-1px;padding:0}
+.check svg{width:14px;height:14px;opacity:0}
+li.task.s-encours .check{border-color:var(--accent);background:linear-gradient(90deg,var(--accent-soft) 50%,transparent 50%)}
+li.task.s-done .check{border-color:var(--accent);background:var(--accent)}
+li.task.s-done .check svg{opacity:1;stroke:var(--accent-ink)}
+.body{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;display:grid;gap:4px}
+.title{font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
+li.task.s-done .title{color:var(--done);text-decoration:line-through;text-decoration-thickness:1px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:.78rem;color:var(--muted);align-items:center}
+.tag{border:1px solid var(--line);border-radius:4px;padding:0 5px;line-height:1.5;text-transform:uppercase;letter-spacing:.04em;font-size:.68rem;font-weight:700}
+.tag.k-decision{border-color:var(--accent);color:var(--accent)}
+.tag.blocked{border-color:var(--high);color:var(--high)}
+.who{display:inline-grid;place-items:center;min-width:22px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-soft);color:var(--fg);font-weight:700;font-size:.7rem}
+.late{color:var(--urgent);font-weight:700}
+
+.fab{position:fixed;right:max(16px,calc(50% - 304px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:58px;height:58px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);font:500 2rem/1 var(--f-display);box-shadow:0 6px 18px rgba(0,0,0,.25);z-index:6}
+.fab[hidden]{display:none!important}
+
+.scrim{position:fixed;inset:0;background:rgba(10,20,20,.45);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:640px;max-height:92%;overflow-y:auto;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
+.sheet h3{font:800 1.25rem var(--f-display);margin:0}
+.field{display:grid;gap:5px;min-width:0}
+.field>span{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px;font-size:16px}
+.field textarea{min-height:76px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:none;padding:9px 4px;font-size:.88rem;border-left:1px solid var(--line)}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.deps{margin:0;padding-left:18px;font-size:.9rem;color:var(--muted);display:grid;gap:2px}
+.deps .ok{text-decoration:line-through}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:none;border-radius:8px;padding:11px 16px;font-weight:700}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);flex:1}
+.btn.danger{color:var(--urgent);border-color:var(--urgent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:8px;font-size:.9rem;z-index:20;max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="head-row">
+      <h1>Chantier de la maison</h1>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="bar"><i id="bar" style="width:0"></i></div>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-view="now" aria-selected="true">Priorités</button>
+      <button role="tab" data-view="rooms" aria-selected="false">Pièces</button>
+      <button role="tab" data-view="lots" aria-selected="false">Lots</button>
+      <button role="tab" data-view="plan" aria-selected="false">Planning</button>
+    </div>
+    <div class="filters" id="filters"></div>
+  </header>
+  <main id="main">
+    <div class="state"><strong>Chargement du chantier…</strong><span>Les tâches partagées avec Jacqueline arrivent.</span></div>
+  </main>
+</div>
+<button class="fab" id="fab" aria-label="Ajouter une tâche" hidden>+</button>
+<div id="sheetRoot"></div>
+
+<script>
+(() => {
+const PEOPLE = ["Joan", "Jacqueline"];
+const KINDS = {travaux:"Travaux", decision:"Décision", achat:"Achat", test:"Test"};
+const PRIOS = {urgente:"Urgente", haute:"Haute", normale:"Normale", basse:"Basse"};
+const PRIO_RANK = {urgente:0, haute:1, normale:2, basse:3};
+const STATUS = {todo:"À faire", encours:"En cours", done:"Fait"};
+
+let db = null, readOnly = false, pending = true;
+let tasks = new Map(), rooms = [];
+let loaded = {tasks:false, rooms:false};
+const ui = load("ui", {view:"now", who:"all", hideDone:true, closed:{}});
+
+function load(k, d){ try{ return Object.assign(d, JSON.parse(localStorage.getItem("chantier."+k)||"{}")); }catch(e){ return d; } }
+function save(){ try{ localStorage.setItem("chantier.ui", JSON.stringify(ui)); }catch(e){} }
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const $ = s => document.querySelector(s);
+
+function toast(msg){
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 3200);
+}
+function writeError(e){
+  if (e && e.code === "invalid_argument"){ readOnly = true; render(); toast("Modification refusée : ce compte est en lecture seule. Il faut un accès Éditeur."); }
+  else toast("Enregistrement impossible pour l'instant. Réessaie dans un moment.");
+}
+
+/* ---------- dates ---------- */
+const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const parseDay = s => { if(!s) return null; const [y,m,d] = s.split("-").map(Number); return new Date(y, m-1, d); };
+function fmtDay(s){
+  const d = parseDay(s); if(!d) return "";
+  const diff = Math.round((d - today())/864e5);
+  if (diff === 0) return "aujourd'hui";
+  if (diff === 1) return "demain";
+  if (diff === -1) return "hier";
+  return d.toLocaleDateString("fr-FR", {weekday:"short", day:"numeric", month:"short"});
+}
+function weekStart(d){ const x = new Date(d); const w = (x.getDay()+6)%7; x.setDate(x.getDate()-w); return x; }
+
+/* ---------- helpers ---------- */
+const roomName = id => (rooms.find(r => r.id === id) || {}).name || "Sans pièce";
+const isDone = t => t.status === "done";
+function blockers(t){ return (t.dependsOn||[]).map(id => tasks.get(id)).filter(d => d && !isDone(d)); }
+function visible(t){
+  if (ui.hideDone && isDone(t)) return false;
+  if (ui.who === "none") return !t.assignee;
+  if (ui.who !== "all") return t.assignee === ui.who;
+  return true;
+}
+function sortTasks(a, b){
+  const s = x => x.status === "done" ? 2 : x.status === "encours" ? 0 : 1;
+  return s(a)-s(b) || PRIO_RANK[a.priority]-PRIO_RANK[b.priority] || (blockers(a).length>0)-(blockers(b).length>0) || String(a.id).localeCompare(String(b.id));
+}
+
+/* ---------- render ---------- */
+function render(){
+  const all = [...tasks.values()];
+  const done = all.filter(isDone).length;
+  $("#count").innerHTML = all.length ? `<b>${done}</b> / ${all.length} faites` : "";
+  $("#bar").style.width = all.length ? (100*done/all.length).toFixed(1)+"%" : "0";
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.view === ui.view));
+  $("#fab").hidden = !db || readOnly;
+  renderFilters();
+
+  const main = $("#main");
+  if (pending) return;
+  if (!db){ main.innerHTML = `<div class="state"><strong>Données partagées indisponibles</strong><span>Ouvre cette page dans claude.ai, connecté·e au compte invité, pour voir et cocher les tâches.</span></div>`; return; }
+  if (!loaded.tasks){ return; }
+  if (!all.length){ main.innerHTML = `<div class="state"><strong>Aucune tâche pour l'instant</strong><span>Ajoute la première avec le bouton +.</span></div>`; return; }
+
+  const list = all.filter(visible).sort(sortTasks);
+  let html = readOnly ? `<p class="hint">Lecture seule : ce compte ne peut pas modifier le chantier.</p>` : "";
+  if (ui.view === "now") html += viewNow(list);
+  else if (ui.view === "rooms") html += viewGrouped(list, all, t => t.room, rooms.map(r => r.id), roomName, true);
+  else if (ui.view === "lots"){ const lots = [...new Set(all.map(t => t.lot || "Divers"))].sort((a,b)=>a.localeCompare(b,"fr")); html += viewGrouped(list, all, t => t.lot || "Divers", lots, x => x, false); }
+  else html += viewPlan(list);
+  main.innerHTML = html || `<div class="state"><strong>Rien ici avec ces filtres</strong></div>`;
+}
+
+function renderFilters(){
+  const opts = [["all","Tous"], ...PEOPLE.map(p => [p,p]), ["none","Personne"]];
+  $("#filters").innerHTML = opts.map(([v,l]) => `<button class="chip" data-who="${esc(v)}" aria-pressed="${ui.who===v}">${esc(l)}</button>`).join("")
+    + `<button class="chip" data-toggle="hideDone" aria-pressed="${!ui.hideDone}">Afficher les faites</button>`;
+}
+
+function row(t, showRoom){
+  const b = blockers(t);
+  const late = t.due && !isDone(t) && parseDay(t.due) < today();
+  const meta = [];
+  if (showRoom) meta.push(esc(roomName(t.room)));
+  if (t.kind && t.kind !== "travaux") meta.push(`<span class="tag k-${esc(t.kind)}">${esc(KINDS[t.kind]||t.kind)}</span>`);
+  if (t.status === "encours") meta.push(`<span class="tag">En cours</span>`);
+  if (b.length && !isDone(t)) meta.push(`<span class="tag blocked" title="${esc(b.map(x=>x.title).join(", "))}">Attend ${b.length}</span>`);
+  if (t.due) meta.push(`<span class="${late?"late":""}">${esc(fmtDay(t.due))}</span>`);
+  if (t.assignee) meta.push(`<span class="who">${esc(t.assignee === "Jacqueline" ? "Jq" : t.assignee.slice(0,2))}</span>`);
+  if (t.note) meta.push(`<span aria-label="note">✎</span>`);
+  return `<li class="task s-${esc(t.status)} p-${esc(t.priority)}">
+    <button class="check" data-check="${esc(t.id)}" aria-label="${isDone(t)?"Marquer à faire":"Marquer fait"}" ${readOnly?"disabled":""}><svg viewBox="0 0 16 16" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3 3 7-7"/></svg></button>
+    <button class="body" data-open="${esc(t.id)}"><span class="title">${esc(t.title)}</span>${meta.length?`<span class="meta">${meta.join("")}</span>`:""}</button>
+  </li>`;
+}
+
+function group(key, title, items, allItems, showRoom, collapsible){
+  const tot = allItems.length, d = allItems.filter(isDone).length;
+  const closed = collapsible && ui.closed[key];
+  return `<section class="group ${closed?"closed":""}">
+    <button class="g-head" ${collapsible?`data-fold="${esc(key)}" aria-expanded="${!closed}"`:"tabindex=-1"}>
+      <h2>${esc(title)}</h2>
+      ${tot?`<span class="mini"><i style="width:${(100*d/tot).toFixed(0)}%"></i></span><span class="n">${d}/${tot}</span>`:`<span class="n">${items.length}</span>`}
+      ${collapsible?`<span class="caret">▾</span>`:""}
+    </button>
+    ${items.length?`<ul class="tasks">${items.map(t => row(t, showRoom)).join("")}</ul>`:`<p class="hint">Tout est fait ici.</p>`}
+  </section>`;
+}
+
+function viewGrouped(list, all, keyOf, order, label, isRooms){
+  const keys = [...order, ...new Set(all.map(keyOf).filter(k => !order.includes(k)))];
+  return keys.map(k => {
+    const items = list.filter(t => keyOf(t) === k), allItems = all.filter(t => keyOf(t) === k);
+    if (!allItems.length) return "";
+    if (!items.length && ui.hideDone && allItems.every(isDone)) return group((isRooms?"r:":"l:")+k, label(k), [], allItems, false, true);
+    if (!items.length) return "";
+    return group((isRooms?"r:":"l:")+k, label(k), items, allItems, !isRooms, true);
+  }).join("");
+}
+
+function viewNow(list){
+  const open = list.filter(t => !isDone(t));
+  const doing = open.filter(t => t.status === "encours");
+  const urgent = open.filter(t => t.status !== "encours" && (t.priority === "urgente" || t.priority === "haute") && !blockers(t).length && t.kind !== "decision");
+  const decisions = open.filter(t => t.kind === "decision" && !blockers(t).length);
+  let h = `<p class="hint">Ce qui peut avancer maintenant : en cours, prioritaire et débloqué, puis les décisions qui débloquent le reste.</p>`;
+  if (doing.length) h += group("n:doing", "En cours", doing, [], true, false);
+  h += group("n:urgent", "Prioritaire", urgent, [], true, false);
+  h += group("n:dec", "Décisions à prendre", decisions.sort((a,b) => unlocks(b)-unlocks(a) || sortTasks(a,b)), [], true, false);
+  return h;
+}
+function unlocks(t){ let n = 0; tasks.forEach(x => { if ((x.dependsOn||[]).includes(t.id)) n++; }); return n; }
+
+function viewPlan(list){
+  const open = list.filter(t => !isDone(t) || ui.hideDone === false);
+  const dated = open.filter(t => t.due).sort((a,b) => a.due.localeCompare(b.due) || sortTasks(a,b));
+  const undated = open.filter(t => !t.due && !isDone(t));
+  const t0 = today(), w0 = weekStart(t0), w1 = new Date(w0); w1.setDate(w1.getDate()+7); const w2 = new Date(w0); w2.setDate(w2.getDate()+14);
+  const buckets = [["Déjà passé", d => d < t0 ], ["Cette semaine", d => d >= t0 && d < w1], ["Semaine prochaine", d => d >= w1 && d < w2], ["Plus tard", d => d >= w2]];
+  let h = "";
+  for (const [name, test] of buckets){
+    const items = dated.filter(t => test(parseDay(t.due)));
+    if (items.length) h += group("p:"+name, name, items, [], true, false);
+  }
+  if (!dated.length) h += `<p class="hint">Aucune tâche datée. Ouvre une tâche et donne-lui une date pour la planifier.</p>`;
+  h += `<p class="hint">${undated.length} tâche${undated.length>1?"s":""} sans date. Donne une date aux prochaines pour les voir ici.</p>`;
+  return h;
+}
+
+/* ---------- actions ---------- */
+async function toggle(id){
+  const t = tasks.get(id); if (!t || readOnly) return;
+  const status = isDone(t) ? "todo" : "done";
+  const prev = t.status; t.status = status; render();
+  try { await db.doc("tasks/"+id).update({status, doneAt: status === "done" ? new Date().toISOString() : null}); }
+  catch(e){ t.status = prev; render(); writeError(e); }
+}
+
+function openSheet(id){
+  const isNew = !id;
+  const t = isNew ? {title:"", room:(rooms[0]||{}).id||"", lot:"", kind:"travaux", priority:"normale", status:"todo", assignee:null, due:null, note:"", dependsOn:[]} : {...tasks.get(id)};
+  if (!t) return;
+  const lots = [...new Set([...tasks.values()].map(x => x.lot).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr"));
+  const deps = (t.dependsOn||[]).map(d => tasks.get(d)).filter(Boolean);
+  const dis = readOnly ? "disabled" : "";
+  const seg = (name, map, val) => `<div class="seg" data-seg="${name}">${Object.entries(map).map(([v,l]) => `<button type="button" data-v="${esc(v)}" aria-pressed="${String(val)===v}" ${dis}>${esc(l)}</button>`).join("")}</div>`;
+  $("#sheetRoot").innerHTML = `<div class="scrim" id="scrim"><form class="sheet" id="sheet" autocomplete="off">
+    <h3>${isNew ? "Nouvelle tâche" : "Tâche"}</h3>
+    <label class="field"><span>Quoi</span><textarea id="f-title" rows="2" required ${dis}>${esc(t.title)}</textarea></label>
+    <div class="row2">
+      <label class="field"><span>Pièce</span><select id="f-room" ${dis}>${rooms.map(r => `<option value="${esc(r.id)}" ${r.id===t.room?"selected":""}>${esc(r.name)}</option>`).join("")}<option value="__new">+ Nouvelle pièce…</option></select></label>
+      <label class="field"><span>Lot</span><input id="f-lot" list="lots" value="${esc(t.lot)}" ${dis}><datalist id="lots">${lots.map(l => `<option value="${esc(l)}">`).join("")}</datalist></label>
+    </div>
+    <label class="field" id="newRoomField" hidden><span>Nom de la nouvelle pièce</span><input id="f-newroom"></label>
+    <div class="field"><span>État</span>${seg("status", STATUS, t.status)}</div>
+    <div class="field"><span>Qui</span>${seg("assignee", {"":"Personne", ...Object.fromEntries(PEOPLE.map(p=>[p,p]))}, t.assignee||"")}</div>
+    <div class="row2">
+      <label class="field"><span>Type</span><select id="f-kind" ${dis}>${Object.entries(KINDS).map(([v,l]) => `<option value="${v}" ${v===t.kind?"selected":""}>${l}</option>`).join("")}</select></label>
+      <label class="field"><span>Priorité</span><select id="f-prio" ${dis}>${Object.entries(PRIOS).map(([v,l]) => `<option value="${v}" ${v===t.priority?"selected":""}>${l}</option>`).join("")}</select></label>
+    </div>
+    <label class="field"><span>Date prévue</span><input type="date" id="f-due" value="${esc(t.due||"")}" ${dis}></label>
+    <label class="field"><span>Notes</span><textarea id="f-note" ${dis}>${esc(t.note)}</textarea></label>
+    ${deps.length ? `<div class="field"><span>Attend d'abord</span><ul class="deps">${deps.map(d => `<li class="${isDone(d)?"ok":""}">${esc(d.title)} · ${esc(roomName(d.room))}</li>`).join("")}</ul></div>` : ""}
+    <div class="actions">
+      ${readOnly ? "" : `<button class="btn primary" type="submit">${isNew ? "Ajouter" : "Enregistrer"}</button>`}
+      <button class="btn" type="button" id="close">Fermer</button>
+      ${!isNew && !readOnly ? `<button class="btn danger" type="button" id="del">Supprimer</button>` : ""}
+    </div>
+  </form></div>`;
+
+  const form = $("#sheet");
+  form.querySelectorAll(".seg").forEach(s => s.addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    s.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  }));
+  $("#f-room").addEventListener("change", e => { $("#newRoomField").hidden = e.target.value !== "__new"; });
+  $("#scrim").addEventListener("click", e => { if (e.target.id === "scrim") closeSheet(); });
+  $("#close").addEventListener("click", closeSheet);
+  const del = $("#del");
+  if (del) del.addEventListener("click", async () => {
+    if (del.dataset.armed !== "1"){ del.dataset.armed = "1"; del.textContent = "Confirmer la suppression"; return; }
+    try { await db.doc("tasks/"+id).delete(); tasks.delete(id); closeSheet(); render(); toast("Tâche supprimée"); } catch(e){ writeError(e); }
+  });
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const segVal = n => (form.querySelector(`[data-seg="${n}"] [aria-pressed="true"]`)||{}).dataset?.v ?? "";
+    const title = $("#f-title").value.trim(); if (!title){ $("#f-title").focus(); return; }
+    let room = $("#f-room").value;
+    try {
+      if (room === "__new"){
+        const name = $("#f-newroom").value.trim(); if (!name){ $("#f-newroom").focus(); return; }
+        const ref = db.collection("rooms").doc();
+        await ref.set({name, order: rooms.length});
+        room = ref.id;
+      }
+      const status = segVal("status") || "todo";
+      const data = {...t, title, room, lot: $("#f-lot").value.trim(), kind: $("#f-kind").value, priority: $("#f-prio").value,
+        status, assignee: segVal("assignee") || null, due: $("#f-due").value || null, note: $("#f-note").value.trim(),
+        doneAt: status === "done" ? (t.doneAt || new Date().toISOString()) : null};
+      const ref = isNew ? db.collection("tasks").doc() : db.doc("tasks/"+id);
+      data.id = ref.id;
+      await ref.set(data);
+      tasks.set(ref.id, data); closeSheet(); render(); toast(isNew ? "Tâche ajoutée" : "Enregistré");
+    } catch(err){ writeError(err); }
+  });
+  if (isNew) $("#f-title").focus();
+}
+function closeSheet(){ $("#sheetRoot").innerHTML = ""; }
+
+/* ---------- events ---------- */
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-view],[data-who],[data-toggle],[data-check],[data-open],[data-fold]");
+  if (!el) return;
+  const d = el.dataset;
+  if (d.view){ ui.view = d.view; save(); render(); window.scrollTo(0,0); }
+  else if (d.who){ ui.who = d.who; save(); render(); }
+  else if (d.toggle){ ui[d.toggle] = !ui[d.toggle]; save(); render(); }
+  else if (d.check){ toggle(d.check); }
+  else if (d.open){ openSheet(d.open); }
+  else if (d.fold){ ui.closed[d.fold] = !ui.closed[d.fold]; save(); render(); }
+});
+$("#fab").addEventListener("click", () => openSheet(null));
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+/* ---------- data ---------- */
+async function start(){
+  db = window.claude && window.claude.use ? await window.claude.use("db") : null;
+  pending = false;
+  if (!db){ render(); return; }
+  db.collection("rooms").onSnapshot(snap => {
+    rooms = snap.docs.map(d => ({id:d.id, ...d.data()})).sort((a,b) => (a.order??99)-(b.order??99));
+    loaded.rooms = true; render();
+  }, () => {});
+  db.collection("tasks").limit(1000).onSnapshot(snap => {
+    tasks = new Map(snap.docs.map(d => [d.id, {...d.data(), id:d.id}]));
+    loaded.tasks = true; render();
+  }, e => { if (e && e.code === "not_granted"){ db = null; } render(); });
+}
+render();
+start();
+})();
+</script>
